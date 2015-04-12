@@ -1,0 +1,11 @@
+Nouveaux fichiers:
+
+1)HoBHIS/HoBHIS_only/ns-3/src/ndnSIM/examples/hobhis-chain.cc
+2)HoBHIS/HoBHIS_only/ns-3/src/ndnSIM/examples/hobhis-fairness.cc
+3)HoBHIS/HoBHIS_only/ns-3/src/ndnSIM/model/ndn-hobhis-net-device-face.h
+4)HoBHIS/HoBHIS_only/ns-3/src/ndnSIM/model/ndn-hobhis-net-device-face.cc
+
+Fichiers modifiés
+
+1)HoBHIS/HoBHIS_only/ns-3/src/ndnSIM/helper/ndn-stack-helper.h (EnableHobhis)
+2)HoBHIS/HoBHIS_only/ns-3/src/ndnSIM/helper/ndn-stack-helper.cc (EnableHobhis)

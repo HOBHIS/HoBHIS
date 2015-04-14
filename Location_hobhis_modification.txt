@@ -7,5 +7,7 @@ Nouveaux fichiers:
 
 Fichiers modifiés:
 
-1)HoBHIS/HoBHIS_only/ns-3/src/ndnSIM/helper/ndn-stack-helper.h (EnableHobhis)
-2)HoBHIS/HoBHIS_only/ns-3/src/ndnSIM/helper/ndn-stack-helper.cc (EnableHobhis)
+1)HoBHIS/HoBHIS_only/ns-3/src/ndnSIM/helper/ndn-stack-helper.h 
+2)HoBHIS/HoBHIS_only/ns-3/src/ndnSIM/helper/ndn-stack-helper.cc
+	Add: fonction "EnableHobhis"
+	Remove : Fonction of families "NetDeviceFaceCreateCallback"

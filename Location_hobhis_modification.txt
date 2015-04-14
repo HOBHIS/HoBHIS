@@ -5,7 +5,7 @@ Nouveaux fichiers:
 3)HoBHIS/HoBHIS_only/ns-3/src/ndnSIM/model/ndn-hobhis-net-device-face.h
 4)HoBHIS/HoBHIS_only/ns-3/src/ndnSIM/model/ndn-hobhis-net-device-face.cc
 
-Fichiers modifiés
+Fichiers modifiés:
 
 1)HoBHIS/HoBHIS_only/ns-3/src/ndnSIM/helper/ndn-stack-helper.h (EnableHobhis)
 2)HoBHIS/HoBHIS_only/ns-3/src/ndnSIM/helper/ndn-stack-helper.cc (EnableHobhis)

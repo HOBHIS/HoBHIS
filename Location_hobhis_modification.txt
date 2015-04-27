@@ -4,6 +4,7 @@ Nouveaux fichiers:
 2)HoBHIS/HoBHIS_only/ns-3/src/ndnSIM/examples/hobhis-fairness.cc
 3)HoBHIS/HoBHIS_only/ns-3/src/ndnSIM/model/ndn-hobhis-net-device-face.h
 4)HoBHIS/HoBHIS_only/ns-3/src/ndnSIM/model/ndn-hobhis-net-device-face.cc
+	HobhisNetDeviceFace is san class of NetDeviceFace, see also ndn-net-device-face.h/.cc and ndn-face.h/.cc
 
 Fichiers modifiés:
 

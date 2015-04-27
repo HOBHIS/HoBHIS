@@ -92,6 +92,9 @@ public:
 
   /**
    * \brief set the band width for a interest
+   * （first of all, we search the interest in the table of face.
+   * If we don't find it, we will insert it.
+   * If we find it, we will change the value of the band width）
    *
    * \param prefix the prefix of a interest
    * \parma bw the value of the band width
@@ -115,7 +118,7 @@ public:
    *
    * \param prefix the prefix of a interest
    *
-   * \return the queue of a interest size
+   * \return the queue of a interest size	（the size of a interest queue）
    */
   uint32_t GetIntQueueSizePerFlow(ndn::Name prefix);
 

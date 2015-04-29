@@ -16,6 +16,11 @@
  * Author: Natalya Rozhnova <natalya.rozhnova@lip6.fr>
  */
 
+/*
+ *	For the questions, search "****?"
+ *	Description :
+ */
+
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include "ns3/ndnSIM-module.h"
@@ -37,15 +42,19 @@ std::stringstream filePlotInterestQueue;
 std::stringstream filePlotQueue1;
 
 void
+// ****?CheckQueueSize (Ptr<Queue> queue, Ptr<HobhisNetDeviceFace> ndf)?
 CheckQueueSize (Ptr<Queue> queue, Ptr<NetDeviceFace> ndf)
 {
 	uint32_t DqtotalSize;
 	uint32_t queuec1 = 0;
 	uint32_t queuec2 = 0;
 	uint32_t queuec3 = 0;
+	// give the number of packets currently stored in the Queue to the variable DqtotalSize
 	DqtotalSize = queue->GetNPackets();
 
+	// if HobhisEnabled is true
 	if(ndf->HobhisEnabled()==true){
+		// cast queue type Ptr<Queue> to ndnqueue type Ptr<NDNDropTailQueue>, like copy. ****?Ptr<NDNDropTailQueue> ndnqueue = StaticCast<Qeueue> (queue)?
 		Ptr<NDNDropTailQueue> ndnqueue = StaticCast<NDNDropTailQueue> (queue);
 		if(ndnqueue != NULL)
 		{

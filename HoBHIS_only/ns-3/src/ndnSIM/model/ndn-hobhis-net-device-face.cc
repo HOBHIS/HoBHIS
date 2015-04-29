@@ -252,27 +252,30 @@ HobhisNetDeviceFace::ShaperDequeue ()
 
 }
 
+//prepare for send interest ??
+//TODO
 void HobhisNetDeviceFace::ShaperSend()
 {
-	Ptr<Packet> p = m_interestQueue.front ();
-	m_interestQueue.pop ();
-	Ptr<Packet> packet = p->Copy();
-	Ptr<InterestHeader> header = Create<InterestHeader> ();
-	packet->RemoveHeader (*header);
-	ndn::Name prefix = header->GetName ();
+	Ptr<Packet> p = m_interestQueue.front (); //from the first
+	m_interestQueue.pop (); //delete the the packet who is delt
+	Ptr<Packet> packet = p->Copy(); //copy it
+	Ptr<InterestHeader> header = Create<InterestHeader> (); // get header
+	packet->RemoveHeader (*header); //packet remove head
+	ndn::Name prefix = header->GetName (); //get prefix
 
 	std::map<ndn::Name, uint32_t>::iterator
-	iqit(m_nIntQueueSizePerFlow.find(prefix.cut(1))),
-	iqend(m_nIntQueueSizePerFlow.end());
-	if (iqit != iqend)
+	iqit(m_nIntQueueSizePerFlow.find(prefix.cut(1))), //find the flow by the prefix
+	iqend(m_nIntQueueSizePerFlow.end()); // the end of the queue
+	if (iqit != iqend) // we find it
 	{
 		uint32_t & queue_size = iqit->second;
 		if(queue_size != 0)
 			queue_size--;
 	}
 
-	std::map <ndn::Name, STimeEntry> & sendtable = GetSendingTable();
+	std::map <ndn::Name, STimeEntry> & sendtable = GetSendingTable(); //get the sending table
 
+	// insert the sending into sending table
 	std::map<ndn::Name, STimeEntry>::iterator
 	fit(sendtable.find(prefix)),
 	fend(sendtable.end());
@@ -287,21 +290,21 @@ void HobhisNetDeviceFace::ShaperSend()
 
 Time HobhisNetDeviceFace::ComputeGap()
 {
-
+	// get the first packet
 	Ptr<Packet> p = m_interestQueue.front ()->Copy();
 
-	m_shaperState = BLOCKED;
+	m_shaperState = BLOCKED; // blocked
 
 	Ptr<Packet> packet = p->Copy ();
 	Ptr<InterestHeader> header = Create<InterestHeader> ();
 	packet->RemoveHeader (*header);
 	ndn::Name prefix = header->GetName ();
 
-	double rtt = -1.0;
+	double rtt = -1.0; // rtt
 	double buf_part = 0;
-	uint64_t bw = GetInFaceBW(prefix.cut(1));
-	double qlen = 0.0;
-	double qlen_flow = 0.0;
+	uint64_t bw = GetInFaceBW(prefix.cut(1)); // band width
+	double qlen = 0.0; // queue length
+	double qlen_flow = 0.0; //queue flow length
 	double queue_rel = 1.0;
 	double fl_num = 1.0;
 	uint32_t max_chunks;
@@ -318,10 +321,12 @@ Time HobhisNetDeviceFace::ComputeGap()
 	 */
 	std::map<ndn::Name, ShrEntry>::iterator
 	fit(shtable.find(prefix.cut(1))),
-	fend(shtable.end());
+	fend(shtable.end()); //end of the table
+
+	//we find it
 	if (fit != fend) {
 		ShrEntry & values = fit->second;
-		rtt = values.get_rtt();
+		rtt = values.get_rtt(); //  rtt of interest who has the prefix
 		qlen_flow = values.get_queue_length();
 		qlen = values.get_total_queue_length();
 		max_chunks = values.get_max_chunks();
@@ -329,8 +334,12 @@ Time HobhisNetDeviceFace::ComputeGap()
 	double flows = GetFlowNumber();
 	if(flows != 0.0)
 		fl_num = flows;
+
+
+	/////////////////////////////////////////////up is initialization///////////////////////
 //	double bw1 = double(bw);
 
+	//by rtt, we decide the shappingRate
 	if(rtt != -1.0)
 	{
 		if(qlen!=0.0 && qlen_flow!=0.0)
@@ -341,26 +350,27 @@ Time HobhisNetDeviceFace::ComputeGap()
 
   	  	  	  	  	if(x > 1.0) {bw1 = double(bw/x);}
 		 */
-		buf_part = m_design * double(m_target*queue_rel - qlen_flow)/rtt;
-		m_shapingRate = double(bw)/(8.0 * m_inContentSize) + buf_part;
+		buf_part = m_design * double(m_target*queue_rel - qlen_flow)/rtt; //recalculer the buf size
+		m_shapingRate = double(bw)/(8.0 * m_inContentSize) + buf_part; //recalculer the shaping Rate
 	}
-	else m_shapingRate = double(bw)/(8.0 * m_outInterestSize);
+	else m_shapingRate = double(bw)/(8.0 * m_outInterestSize);  // rtt == -1 ->  there isn't rtt in the interest packet
+
 
 	double out_rate_in_interests = double(m_outBitRate)/(8.0 * m_outInterestSize);
 
-	Time gap = Seconds(0.0);
+	Time gap = Seconds(0.0);//initalization
 
-	if(m_shapingRate >= out_rate_in_interests)
+	if(m_shapingRate >= out_rate_in_interests) //shaping rate > out rate
 	{
 		m_shapingRate = out_rate_in_interests/fl_num;
 
-		gap = Seconds(0.0);
+		gap = Seconds(0.0);  // there isn't the gap
 	}
-	else
+	else // shaping rate < out rate
 	{
 		double del = 0.0;
 
-		del = double(1.0 / m_shapingRate);
+		del = double(1.0 / m_shapingRate); //??
 
 		gap = Seconds(del);
 

@@ -32,25 +32,35 @@ using namespace ndn;
 std::stringstream filePlotQueue;
 std::stringstream filePlotInterestQueue;
 
+/**
+ * @brief calculate the queue size of interest and data
+ * @param queue
+ * @param ndf
+ */
+
 void
 CheckQueueSize (Ptr<Queue> queue, Ptr<NetDeviceFace> ndf)
 {
 	uint32_t DqtotalSize;
+	//the initialization length of the consumer's queue is 0
 	uint32_t queuec1 = 0;
 	if(ndf->HobhisEnabled()==true)
 	{
 		Ptr<NDNDropTailQueue> ndnqueue = StaticCast<NDNDropTailQueue> (queue);
 		if(ndnqueue != NULL)
 		{
+			//if ndnqueue not empty,we obtain the queue size of each flow
 			queuec1 = ndnqueue->GetQueueSizePerFlow("/c1");
+			//we obtain the totalsize of dataqueue
 			DqtotalSize = ndnqueue->GetDataQueueLength();
 		}
 	}
+	//if hobhis not active,the data queue size is the pakets's number
 	else DqtotalSize = queue->GetNPackets();
 
  // check queue size every 1/100 of a second
   Simulator::Schedule (Seconds (0.01), &CheckQueueSize, queue, ndf);
-
+ //print the queue size of consumer1 in the current time
   std::ofstream fPlotQueue (filePlotQueue.str ().c_str (), std::ios::out|std::ios::app);
   fPlotQueue << Simulator::Now ().GetSeconds ()
 		     << " @ "<< queue
@@ -102,6 +112,7 @@ main (int argc, char *argv[])
 
   // Install CCNx stack on all nodes
   ndn::StackHelper ndnHelper;
+  //on implementer le stratregy best route
 	  ndnHelper.SetForwardingStrategy ("ns3::ndn::fw::BestRoute");
 
   /* enable shaper
@@ -111,7 +122,9 @@ main (int argc, char *argv[])
    * convergence speed (design parameter)
    * dynamic adjustment of design parameter (only for monoflow))
    */
+//shaper enable,server,buffer size(max interest)=10000,queue target=60,convergence speed=0.7
   ndnHelper.EnableHobhis (true, false, 10000, 60, 0.7);
+  //contentstore strategy: lru, size maximum=1
   ndnHelper.SetContentStore ("ns3::ndn::cs::Lru", "MaxSize", "1"); // almost no caching
   ndnHelper.Install (r1);
 
@@ -126,6 +139,7 @@ main (int argc, char *argv[])
   Ptr<PointToPointNetDevice> p2pnd = StaticCast<PointToPointNetDevice> (nd);
 
   factory.SetTypeId("ns3::NDNDropTailQueue");
+  //default maxpacket=100
   Config::SetDefault ("ns3::NDNDropTailQueue::MaxPackets", UintegerValue (100));
   Ptr<Queue> queueA = factory.Create<Queue> ();
   Ptr<NDNDropTailQueue> ndnqueue = StaticCast<NDNDropTailQueue> (queueA);
@@ -136,6 +150,7 @@ main (int argc, char *argv[])
 
   ndn::StackHelper ndnHelper1;
   ndnHelper1.SetForwardingStrategy ("ns3::ndn::fw::BestRoute");
+  //enable hobhis client/server in the same time
   ndnHelper1.EnableHobhis (true, true);
   ndnHelper1.SetContentStore ("ns3::ndn::cs::Lru", "MaxSize", "1"); // almost no caching
   ndnHelper1.Install (c1);
@@ -157,10 +172,11 @@ main (int argc, char *argv[])
 
   // Install servers
   ndn::AppHelper producerHelper ("ns3::ndn::Producer");
+  //the capacity of producter=1000
   producerHelper.SetAttribute ("PayloadSize", StringValue("1000"));
   producerHelper.SetAttribute ("RandomDelayMin", StringValue(RSmin));
   producerHelper.SetAttribute ("RandomDelayMax", StringValue(RSmax));
-  producerHelper.SetPrefix ("/c1");
+  producerHelper.SetPrefix ("/c1");//???????ying gai shi /s1 ba?
   producerHelper.Install (s1);
 
   // Calculate and install FIBs

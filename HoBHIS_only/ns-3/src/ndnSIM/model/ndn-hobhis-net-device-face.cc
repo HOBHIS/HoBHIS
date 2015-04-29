@@ -214,6 +214,7 @@ HobhisNetDeviceFace::SendImpl (Ptr<Packet> p)
 	}
 }
 
+
 void
 HobhisNetDeviceFace::ShaperOpen ()
 {
@@ -233,14 +234,20 @@ HobhisNetDeviceFace::ShaperOpen ()
 	}
 }
 
+/*
+ * we count gap.
+ * if the value of the gap is 0.0, we set the schedule as 0.0001 and recall ShaperOpen;
+ * if not, the fonction ShaperSend is called for preparing to send packets.
+ */
 void
 HobhisNetDeviceFace::ShaperDequeue ()
 {
 	NS_LOG_FUNCTION (this);
 	NS_LOG_LOGIC(this << " shaper qlen: " << m_interestQueue.size());
 
-	Time gap = ComputeGap();
+	Time gap = ComputeGap(); // calcule gap
 
+	//call ShaperSend() ou ShaperOpen() dans le cas pas de gap
 	if(gap.GetSeconds() >= 0.0)
 	{
 		Simulator::Schedule (gap, &HobhisNetDeviceFace::ShaperSend, this);
@@ -339,6 +346,7 @@ Time HobhisNetDeviceFace::ComputeGap()
 	/////////////////////////////////////////////up is initialization///////////////////////
 //	double bw1 = double(bw);
 
+	//TODO : ici est important
 	//by rtt, we decide the shappingRate
 	if(rtt != -1.0)
 	{

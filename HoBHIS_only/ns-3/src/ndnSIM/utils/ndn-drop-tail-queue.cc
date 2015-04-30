@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Natalya Rozhnova <natalya.rozhnova@lip6.fr>, UniversitŽ Pierre et Marie Curie, Paris, France
+ * Author: Natalya Rozhnova <natalya.rozhnova@lip6.fr>, Universitï¿½ Pierre et Marie Curie, Paris, France
  */
 
 #include "ns3/log.h"
@@ -88,6 +88,9 @@ NDNDropTailQueue::GetMode (void)
   return m_mode;
 }
 
+/*
+ * insert a packet if there is still space in the queue
+ */
 bool
 NDNDropTailQueue::DoEnqueue (Ptr<Packet> p)
 {
@@ -101,6 +104,7 @@ NDNDropTailQueue::DoEnqueue (Ptr<Packet> p)
 	uint8_t nack;
 
 
+	//interest
 	if(type ==ndn::HeaderHelper::INTEREST_NDNSIM ||
 			type == ndn::HeaderHelper::INTEREST_CCNB)
 	{
@@ -110,6 +114,7 @@ NDNDropTailQueue::DoEnqueue (Ptr<Packet> p)
 		nack = header->GetNack();
 	}
 
+	//content and interest
 	if(type == ndn::HeaderHelper::CONTENT_OBJECT_NDNSIM ||
 			type == ndn::HeaderHelper::CONTENT_OBJECT_CCNB ||
 			((type ==ndn::HeaderHelper::INTEREST_NDNSIM ||
@@ -118,14 +123,14 @@ NDNDropTailQueue::DoEnqueue (Ptr<Packet> p)
 		if (m_mode == QUEUE_MODE_PACKETS &&(m_packets.size () >= m_maxPackets))
 		{
 			NS_LOG_LOGIC ("Queue full (at max packets) -- droppping pkt");
-			Drop (p);
+			Drop (p); //drop  packet ï¼š packet size
 			return false;
 		}
 
 		if (m_mode == QUEUE_MODE_BYTES && (m_bytesInQueue + p->GetSize () >= m_maxBytes))
 		{
 			NS_LOG_LOGIC ("Queue full (packet would exceed max bytes) -- droppping pkt");
-			Drop (p);
+			Drop (p); //drop packet : bytes
 			return false;
 		}
 
@@ -133,7 +138,13 @@ NDNDropTailQueue::DoEnqueue (Ptr<Packet> p)
 		NS_LOG_LOGIC ("Number bytes " << m_bytesInQueue);
 	}
 
-	if(type == ndn::HeaderHelper::CONTENT_OBJECT_NDNSIM || type == ndn::HeaderHelper::CONTENT_OBJECT_CCNB)
+	//content; for interest, there is not the queue ?
+	/*
+	 * here, we insert content packet.
+	 * But for interst, we don't insert it ?
+	 */
+	if(type == ndn::HeaderHelper::CONTENT_OBJECT_NDNSIM ||
+			type == ndn::HeaderHelper::CONTENT_OBJECT_CCNB)
 	{
 		m_bytesInQueue += p->GetSize ();
 		m_packets.push (p);
@@ -161,6 +172,11 @@ NDNDropTailQueue::DoEnqueue (Ptr<Packet> p)
 	return true;
 }
 
+/*
+ * This is a private method, but it is not used by another method
+ * just delete the first element
+ * delete the first and insert the new packet in the last
+ */
 Ptr<Packet>
 NDNDropTailQueue::DoDequeue (void)
 {
@@ -173,8 +189,9 @@ NDNDropTailQueue::DoDequeue (void)
 			  return 0;
 		  }
 
+		  // the first element : the packet who stay the longest time
 		  p = m_packets.front ();
-		  m_packets.pop ();
+		  m_packets.pop (); //delete it
 		  m_bytesInQueue -= p->GetSize ();
 
 		  NS_LOG_LOGIC ("Popped " << p);
@@ -183,6 +200,11 @@ NDNDropTailQueue::DoDequeue (void)
 		  NS_LOG_LOGIC ("Number bytes " << m_bytesInQueue);
 
 
+		  /*
+		   * delete it in the queue
+		   * first of all, we try to find it in the queue
+		   * if it is in, we delete it
+		   */
 		  std::map <ndn::Name, uint32_t> & QueueSizePerFlow = GetQLengthPerFlow ();
 
 		  PppHeader pppHeader;

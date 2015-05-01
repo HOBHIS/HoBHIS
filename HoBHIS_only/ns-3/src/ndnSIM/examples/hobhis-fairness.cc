@@ -150,17 +150,27 @@ main (int argc, char *argv[])
 
 	// Router 1 interface 0
 	ObjectFactory factory;
+	// define variable type L3Protocol ndn from r1
 	Ptr<L3Protocol> ndn = r1->GetObject<L3Protocol> ();
+	// define variable type Face face 0 from ndn
 	Ptr<Face> face = ndn->GetFace (0);
+	// cast face (type Face) to ndf (type NetDeviceFace) ****?Ptr<NetDeviceFace> ndf = DynamicCast<Face>(face)?
 	Ptr<NetDeviceFace> ndf = DynamicCast<NetDeviceFace>(face);
+	// define variable type NetDevice nd from ndf
 	Ptr<NetDevice> nd = ndf->GetNetDevice();
+	// cast nd (type NetDevice) to p2pnd (type PointToPointNetDevice) ****?Ptr<PointToPointNetDevice> p2pnd = StaticCast<NetDevice> (nd)?
 	Ptr<PointToPointNetDevice> p2pnd = StaticCast<PointToPointNetDevice> (nd);
 
+	// define type ID and default config : max packets is 100
 	factory.SetTypeId("ns3::NDNDropTailQueue");
 	Config::SetDefault ("ns3::NDNDropTailQueue::MaxPackets", UintegerValue (100));
+	// create a queueA
 	Ptr<Queue> queueA = factory.Create<Queue> ();
+	// cast queueA (type Queue) to ndnqueue (type NDNDropTailQueue)
 	Ptr<NDNDropTailQueue> ndnqueue = StaticCast<NDNDropTailQueue> (queueA);
+	// set ndnqueue mode
 	ndnqueue->SetMode(ndn::NDNDropTailQueue::QUEUE_MODE_PACKETS);
+	// install queueA a p2pnd
 	p2pnd->SetQueue (queueA);
 
 	// Router 1 interface 1

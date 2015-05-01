@@ -22,14 +22,16 @@
  *	Description :
  *	1, define a function CheckQueueSize (Ptr<Queue> queue, Ptr<NetDeviceFace> ndf) for record every 0.01s those numbers of packets(interest and data) in different queues
  *	2, define a function CheckInterestQueueSize (Ptr<NetDeviceFace> ndf) for record every 0.01s those numbers of the interest packets in different queues
- *	3, install CCNx stack on all router nodes, define interface and queue for r1, r2 and r3
- *	4, install CCNx stack on all Consumers and Servers nodes
- *	5, installing global routing interface on all nodes
- *	6, install consumers with some parameters
- *	7, register prefix with global routing controller and install producer
- *	8, install servers with some parameters
- *	9, calculate and install FIBs
- *	10, run simulator with tow functions CheckQueueSize and CheckInterestQueueSize to tacer
+ *  3, read the topology
+ *	4, install CCNx stack on all router nodes, define interface and queue for r1, r2 and r3
+ *	5, install CCNx stack on all Consumers and Servers nodes
+ *	6, installing global routing interface on all nodes
+ *	7, install consumers with some parameters
+ *	8, register prefix with global routing controller and install producer
+ *	9, install servers with some parameters
+ *	10, calculate and install FIBs
+ *	11, run simulator with tow functions CheckQueueSize and CheckInterestQueueSize to tacer
+ *	For different steps, search "****X(1~11)"
  */
 
 #include "ns3/core-module.h"
@@ -52,6 +54,7 @@ std::stringstream filePlotQueue;
 std::stringstream filePlotInterestQueue;
 std::stringstream filePlotQueue1;
 
+// ****1
 void
 // ****?CheckQueueSize (Ptr<Queue> queue, Ptr<HobhisNetDeviceFace> ndf)?
 // ****<queue.h>(ns3)
@@ -92,6 +95,7 @@ CheckQueueSize (Ptr<Queue> queue, Ptr<NetDeviceFace> ndf)
 	fPlotQueue.close ();
 }
 
+// ****2
 void
 CheckInterestQueueSize (Ptr<NetDeviceFace> ndf)
 {
@@ -130,6 +134,7 @@ main (int argc, char *argv[])
 	cmd.AddValue ("wfp", "<0/1> to write results for plot (gnuplot)", writeForPlot);
 	cmd.Parse (argc, argv);
 
+	// ****3
 	// Read topology
 	// ****<annotated-topology-reader.h>(ndnsim)
 	AnnotatedTopologyReader topologyReader ("", 25);
@@ -137,6 +142,7 @@ main (int argc, char *argv[])
 	topologyReader.Read ();
 
 	// Getting containers for the consumer/producer and router
+	// ****<names.h>(ns3)
 	Ptr<Node> c1 = Names::Find<Node> ("C1");
 	Ptr<Node> c2 = Names::Find<Node> ("C2");
 	Ptr<Node> c3 = Names::Find<Node> ("C3");
@@ -147,6 +153,7 @@ main (int argc, char *argv[])
 	Ptr<Node> s2 = Names::Find<Node> ("P2");
 	Ptr<Node> s3 = Names::Find<Node> ("P3");
 
+	// ****4
 	// Install CCNx stack on all router nodes
 	ndn::StackHelper ndnHelper;
 	// set forwarding strategy
@@ -291,7 +298,7 @@ main (int argc, char *argv[])
 	// attach a queueD to the p2pnd4
 	p4pnd4->SetQueue (queueD);
 
-	//***********************************************************************************************************************************************************
+	//****5******************************************************************************************************************************************************
 
 	// Install CCNx stack on all Consumers and Servers nodes
 	ndn::StackHelper ndnHelper1;
@@ -310,13 +317,15 @@ main (int argc, char *argv[])
 	ndnHelper1.Install (s3);
 
 
+	// ****6
 	// Installing global routing interface on all nodes
-	// ****<ndn-global-routing-helper.h>
+	// ****<ndn-global-routing-helper.h>(ndnsim)
 	ndn::GlobalRoutingHelper ndnGlobalRoutingHelper;
 	ndnGlobalRoutingHelper.InstallAll ();
 
+	// ****7
 	// Install consumers
-	// ****<ndn-app-helper.h> define consumerHelper as a type rate CBR
+	// ****<ndn-app-helper.h>(ndnsim) define consumerHelper as a type rate CBR
 	ndn::AppHelper consumerHelper ("ns3::ndn::ConsumerCbr");
 	// set consumer send frequency
 	consumerHelper.SetAttribute("Frequency", StringValue ("100.0"));
@@ -346,12 +355,14 @@ main (int argc, char *argv[])
 	// install for c3
 	consumerHelper3.Install (c3);
 
+	// ****8
 	// Register prefix with global routing controller and install producer
 
 	ndnGlobalRoutingHelper.AddOrigins ("/c1", s1);
 	ndnGlobalRoutingHelper.AddOrigins ("/c2", s2);
 	ndnGlobalRoutingHelper.AddOrigins ("/c3", s3);
 
+	// ****9
 	// Install servers
 	// define producerHelper
 	ndn::AppHelper producerHelper ("ns3::ndn::Producer");
@@ -392,12 +403,14 @@ main (int argc, char *argv[])
 	// install for s3
 	producerHelper3.Install (s3);
 
+	// ****10
 	// Calculate and install FIBs
 	ndnGlobalRoutingHelper.CalculateRoutes ();
 
 	// stop simulator after 50s
 	Simulator::Stop (Seconds (50.0));
 
+	//****11
 	// Queue trace
 
 	std::string pathOut = ".";

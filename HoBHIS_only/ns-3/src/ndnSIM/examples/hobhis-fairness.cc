@@ -23,8 +23,8 @@
  *	1, define a function CheckQueueSize (Ptr<Queue> queue, Ptr<NetDeviceFace> ndf) for record every 0.01s the numbers of data packets with different prefix(different flow) in the ndf <NetDeviceFace>  and the queue <Queue>
  *	2, define a function CheckInterestQueueSize (Ptr<NetDeviceFace> ndf) for record every 0.01s the numbers of the interest packets by different flow and total in the ndf <NetDeviceFace>
  *  3, read the topology, see also <command-line.h>(ns3)
- *	4, install CCNx stack on all router nodes, attach different drop tail queues to different net device found by different net device faces for r1(face1, 2 and 3), r2(face1) and r3(face1)
- *	5, install CCNx stack on all Consumers and Servers nodes, don't need to install drop tail queues
+ *	4, install CCNx stack on all router nodes（in the same time, install interest queue for face), attach different drop tail data queues to different net device found by different net device faces for r1(face1, 2 and 3), r2(face1) and r3(face1)
+ *	5, install CCNx stack on all Consumers and Servers nodes, don't need to install queues（buffer）
  *	6, installing global routing interface on all nodes, see also <ndn-global-routing-helper.h>(ndnsim)
  *	7, install consumers app using AppHelper with some parameters
  *	8, register prefix with global routing controller and install producer using GlobalRoutingHelper, see also <ndn-global-routing-helper.h>(ndnsim)
@@ -168,6 +168,7 @@ main (int argc, char *argv[])
 	// almost no caching, max size is 1
 	ndnHelper.SetContentStore ("ns3::ndn::cs::Lru", "MaxSize", "1");
 	// install CCNx stack for r1, r2 and r3
+	// ****? for r3, is it need define 3 different queue rather than a single queue size 1000000?
 	ndnHelper.Install (r1);
 	ndnHelper.Install (r2);
 	ndnHelper.Install (r3);
@@ -423,6 +424,7 @@ main (int argc, char *argv[])
 	if (writeForPlot)
 	{
 		// config output
+		// data queue：r2-r1
 		filePlotQueue << pathOut << "/" << "data-queue-r2-r1.plotme";
 		remove (filePlotQueue.str ().c_str ());
 		// define variable type L3Protocol ndn from r2

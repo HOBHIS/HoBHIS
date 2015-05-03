@@ -15,3 +15,9 @@ Fichiers modifiés:
 2)HoBHIS/HoBHIS_only/ns-3/src/ndnSIM/helper/ndn-stack-helper.cc
 	Add: fonction "EnableHobhis"
 	Remove : Fonction of families "NetDeviceFaceCreateCallback"
+
+fichier á étudier:
+ndn-consumer-cbr.h
+ndn-producer.h
+ndn-app-helper.h
+ndn-forwading-strategy.h

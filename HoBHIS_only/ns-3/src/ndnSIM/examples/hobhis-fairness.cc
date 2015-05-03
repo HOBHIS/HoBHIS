@@ -20,16 +20,16 @@
  *	For the questions, search "****?"
  *	For include, search "****<"
  *	Description :
- *	1, define a function CheckQueueSize (Ptr<Queue> queue, Ptr<NetDeviceFace> ndf) for record every 0.01s those numbers of packets(interest and data) in different queues
- *	2, define a function CheckInterestQueueSize (Ptr<NetDeviceFace> ndf) for record every 0.01s those numbers of the interest packets in different queues
- *  3, read the topology
- *	4, install CCNx stack on all router nodes, define interface and queue for r1, r2 and r3
- *	5, install CCNx stack on all Consumers and Servers nodes
- *	6, installing global routing interface on all nodes
- *	7, install consumers with some parameters
- *	8, register prefix with global routing controller and install producer
- *	9, install servers with some parameters
- *	10, calculate and install FIBs
+ *	1, define a function CheckQueueSize (Ptr<Queue> queue, Ptr<NetDeviceFace> ndf) for record every 0.01s the numbers of data packets with different prefix(different flow) in the ndf <NetDeviceFace>  and the queue <Queue>
+ *	2, define a function CheckInterestQueueSize (Ptr<NetDeviceFace> ndf) for record every 0.01s the numbers of the interest packets by different flow and total in the ndf <NetDeviceFace>
+ *  3, read the topology, see also <command-line.h>(ns3)
+ *	4, install CCNx stack on all router nodes, attach different drop tail queues to different net device found by different net device faces for r1(face1, 2 and 3), r2(face1) and r3(face1)
+ *	5, install CCNx stack on all Consumers and Servers nodes, don't need to install drop tail queues
+ *	6, installing global routing interface on all nodes, see also <ndn-global-routing-helper.h>(ndnsim)
+ *	7, install consumers app using AppHelper with some parameters
+ *	8, register prefix with global routing controller and install producer using GlobalRoutingHelper, see also <ndn-global-routing-helper.h>(ndnsim)
+ *	9, install servers app using AppHelper with some parameters
+ *	10, calculate and install FIBs, see also <ndn-global-routing-helper.h>(ndnsim)
  *	11, run simulator with tow functions CheckQueueSize and CheckInterestQueueSize to tacer
  *	For different steps, search "****X(1~11)"
  */
@@ -56,11 +56,13 @@ std::stringstream filePlotQueue1;
 
 // ****1
 void
+// for check the size of data queue, it need not only the parameter queue, but also ndf for make sure the HobhisEnabled is on!
 // ****?CheckQueueSize (Ptr<Queue> queue, Ptr<HobhisNetDeviceFace> ndf)?
 // ****<queue.h>(ns3)
 CheckQueueSize (Ptr<Queue> queue, Ptr<NetDeviceFace> ndf)
 {
 	// define different the number of packets of queues
+	// queue1, queue2 and queue3 are for different prefix "/c1", "/c2" and "/c3"
 	uint32_t DqtotalSize;
 	uint32_t queuec1 = 0;
 	uint32_t queuec2 = 0;
@@ -68,7 +70,7 @@ CheckQueueSize (Ptr<Queue> queue, Ptr<NetDeviceFace> ndf)
 	// give the number of packets currently stored in the queue to the variable DqtotalSize
 	DqtotalSize = queue->GetNPackets();
 
-	// if HobhisEnabled is true
+	// if HobhisEnabled is true, called by NetDeviceFace ndf
 	if(ndf->HobhisEnabled()==true){
 		// cast queue （type Ptr<Queue>） to ndnqueue （type Ptr<NDNDropTailQueue>）, like copy. ****?Ptr<NDNDropTailQueue> ndnqueue = StaticCast<Qeueue> (queue)?
 		// ****<ndn-drop-tail-queue.h>(ndnsim)
@@ -80,7 +82,7 @@ CheckQueueSize (Ptr<Queue> queue, Ptr<NetDeviceFace> ndf)
 			queuec2 = ndnqueue->GetQueueSizePerFlow("/c2");
 			queuec3 = ndnqueue->GetQueueSizePerFlow("/c3");
 
-			// update the numbers total of packets for DqtotalSize
+			// update the numbers total of packets for DqtotalSize, using function of class NDNDropTailQueue
 			DqtotalSize = ndnqueue->GetDataQueueLength();
 		}
 	}
@@ -91,18 +93,20 @@ CheckQueueSize (Ptr<Queue> queue, Ptr<NetDeviceFace> ndf)
 
 	// print each three queues size by flow(prefixs) and total DqtotalSize
 	std::ofstream fPlotQueue (filePlotQueue.str ().c_str (), std::ios::out|std::ios::app);
+	// show as: XX.XXs @ queue "/c1" n1, "/c2" n2, "/c3" n3 -total n
 	fPlotQueue << Simulator::Now ().GetSeconds () << " @ "<< queue <<" /c1 "<<queuec1<<" /c2 "<<queuec2<<" /c3 "<<queuec3<< " -total " <<DqtotalSize<< std::endl;
 	fPlotQueue.close ();
 }
 
 // ****2
 void
+// for check the size of interest queue, it need only the parameter ndf
 CheckInterestQueueSize (Ptr<NetDeviceFace> ndf)
 {
 	// cast ndf(type NetDeviceFace) to hndf(type HobhisNetDeviceFace) ****? Ptr<HobhisNetDeviceFace> hndf = StaticCast<NetDeviceFace> (ndf);
 	// ****<ndn-hobhis-net-device-face.h>(ndnsim)
 	Ptr<HobhisNetDeviceFace> hndf = StaticCast<HobhisNetDeviceFace> (ndf);
-	// define different queues
+	// define different queues for different prefix
 	uint32_t queuec1 = 0;
 	uint32_t queuec2 = 0;
 	uint32_t queuec3 = 0;
@@ -111,13 +115,14 @@ CheckInterestQueueSize (Ptr<NetDeviceFace> ndf)
 	uint32_t IqSize = hndf->GetQueueLength();
 	// check queue size every 1/100 of a second by calling itself: update variable DqtotalSize, queuec1, queuec2 and queuec3
 	Simulator::Schedule (Seconds (0.01), &CheckInterestQueueSize, ndf);
-	// get those different numbers of packets for three different queues who have different prefix
+	// get those different numbers of interest packets for three different queues who have different prefix
 	queuec1 = hndf->GetIntQueueSizePerFlow("/c1");
 	queuec2 = hndf->GetIntQueueSizePerFlow("/c2");
 	queuec3 = hndf->GetIntQueueSizePerFlow("/c3");
 
 	// print each three interest queues size by flow(prefixs) and total IqSize
 	std::ofstream fPlotQueue (filePlotInterestQueue.str ().c_str (), std::ios::out|std::ios::app);
+	// show as: XX.XXs @ hndf -tql n "/c1" n1 "/c2" n2 "/c3" n3  ****?fPlotQueue << Simulator::Now ().GetSeconds () << " @ "<< ndf << " -tql " <<IqSize<<" /c1 "<<queuec1<<" /c2 "<<queuec2<<" /c3 "<<queuec3<< std::endl;
 	fPlotQueue << Simulator::Now ().GetSeconds () << " @ "<< hndf << " -tql " <<IqSize<<" /c1 "<<queuec1<<" /c2 "<<queuec2<<" /c3 "<<queuec3<< std::endl;
 	fPlotQueue.close ();
 }
@@ -125,10 +130,10 @@ CheckInterestQueueSize (Ptr<NetDeviceFace> ndf)
 int
 main (int argc, char *argv[])
 {
-	// default writeForPlot = false
+	// in default writeForPlot = false
 	bool writeForPlot = false;
 
-	// control if writeForPlot and get parameters via command line
+	// control if writeForPlot shoud be on and get parameters via command line
 	// ****<command-line.h>(ns3)
 	CommandLine cmd;
 	cmd.AddValue ("wfp", "<0/1> to write results for plot (gnuplot)", writeForPlot);
@@ -141,7 +146,7 @@ main (int argc, char *argv[])
 	topologyReader.SetFileName ("src/ndnSIM/examples/topologies/hobhis-fairness.txt");
 	topologyReader.Read ();
 
-	// Getting containers for the consumer/producer and router
+	// Getting containers for the consumer/producer and router from the topology
 	// ****<names.h>(ns3)
 	Ptr<Node> c1 = Names::Find<Node> ("C1");
 	Ptr<Node> c2 = Names::Find<Node> ("C2");
@@ -154,15 +159,15 @@ main (int argc, char *argv[])
 	Ptr<Node> s3 = Names::Find<Node> ("P3");
 
 	// ****4
-	// Install CCNx stack on all router nodes
+	// Install CCNx stack on all router nodes with StackHelper
 	ndn::StackHelper ndnHelper;
 	// set forwarding strategy
 	ndnHelper.SetForwardingStrategy ("ns3::ndn::fw::BestRoute");
-	// (enabled, client/server, INTEREST buffer size, target, convergence rate)
+	//  meaning of those parameter (enabled, client/server, INTEREST buffer size, target: r, convergence rate: h)
 	ndnHelper.EnableHobhis (true, false, 1000000, 60, 0.7);
 	// almost no caching, max size is 1
 	ndnHelper.SetContentStore ("ns3::ndn::cs::Lru", "MaxSize", "1");
-	// install for r1, r2 and r3
+	// install CCNx stack for r1, r2 and r3
 	ndnHelper.Install (r1);
 	ndnHelper.Install (r2);
 	ndnHelper.Install (r3);
@@ -172,7 +177,7 @@ main (int argc, char *argv[])
 	// Router 1 interface 0
 	// ****<object-factory.h>(ns3)
 	ObjectFactory factory;
-	// define variable type L3Protocol ndn from r1
+	// define variable type L3Protocol ndn from r1, r1 has been already install the CCNx stack
 	// ****<ndn-l3-protocol.h>(ndnsim)
 	Ptr<L3Protocol> ndn = r1->GetObject<L3Protocol> ();
 	// define variable type Face face (0) from ndn
@@ -300,7 +305,7 @@ main (int argc, char *argv[])
 
 	//****5******************************************************************************************************************************************************
 
-	// Install CCNx stack on all Consumers and Servers nodes
+	// Install CCNx stack on all Consumers and Servers nodes with StackHelper
 	ndn::StackHelper ndnHelper1;
 	// set forwarding strategy
 	ndnHelper1.SetForwardingStrategy ("ns3::ndn::fw::BestRoute");
@@ -324,7 +329,7 @@ main (int argc, char *argv[])
 	ndnGlobalRoutingHelper.InstallAll ();
 
 	// ****7
-	// Install consumers
+	// Install consumers app with AppHelper
 	// ****<ndn-app-helper.h>(ndnsim) define consumerHelper as a type rate CBR
 	ndn::AppHelper consumerHelper ("ns3::ndn::ConsumerCbr");
 	// set consumer send frequency
@@ -417,6 +422,7 @@ main (int argc, char *argv[])
 	// if flag writeForPlot is true
 	if (writeForPlot)
 	{
+		// config output
 		filePlotQueue << pathOut << "/" << "data-queue-r2-r1.plotme";
 		remove (filePlotQueue.str ().c_str ());
 		// define variable type L3Protocol ndn from r2
@@ -426,13 +432,13 @@ main (int argc, char *argv[])
 		Ptr<Face> face = ndn->GetFace (0);
 		// cast face (type Face) to ndf (type NetDeviceFace) ****?Ptr<NetDeviceFace> ndf = DynamicCast<Face>(face)?
 		Ptr<NetDeviceFace> ndf = DynamicCast<NetDeviceFace>(face);
-		// get NetDevice nd (0) from NetDeviceFace ndn
+		// get NetDevice nd from NetDeviceFace ndn
 		Ptr<NetDevice> nd = ndf->GetNetDevice();
 		// cast nd (type NetDevice) to p2pnd (type PointToPointNetDevice) ****?Ptr<PointToPointNetDevice> p2pnd = StaticCast<NetDevice> (nd)?
 		Ptr<PointToPointNetDevice> p2pnd = StaticCast<PointToPointNetDevice> (nd);
-		// get queue from PointToPointNetDevice p2pnd
+		// get queue from PointToPointNetDevice p2pnd, queue is already attach into p2pnd
 		Ptr<Queue> queue = p2pnd->GetQueue();
-		// simulator using CheckQueueSize for Queue queue and NetDeviceFace ndf
+		// simulator using CheckQueueSize for queue <Queue> and ndf <NetDeviceFace>
 		Simulator::ScheduleNow (&CheckQueueSize, queue, ndf);
 
 		// Check Interest queue size
@@ -440,6 +446,7 @@ main (int argc, char *argv[])
 		Ptr<Face> face1 = ndn->GetFace (1);
 		// cast face1 (type Face) to ndf1 (type NetDeviceFace) ****?Ptr<NetDeviceFace> ndf1 = DynamicCast<Face>(face1)?
 		Ptr<NetDeviceFace> ndf1 = DynamicCast<NetDeviceFace>(face1);
+		// interest queue for r2 to r3
 		filePlotInterestQueue << pathOut << "/" << "interest-queue-r2-r3.plotme";
 		remove (filePlotInterestQueue.str ().c_str ());
 		// simulator using CheckInterestQueueSize for NetDeviceFace ndf1

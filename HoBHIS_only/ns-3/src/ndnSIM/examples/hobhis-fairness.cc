@@ -16,8 +16,8 @@
  * Author: Natalya Rozhnova <natalya.rozhnova@lip6.fr>
  */
 
-/*
- *	For the questions, search "****?"
+/**
+ * 	\brief For the questions, search "****?"
  *	For include, search "****<"
  *	Description :
  *	1, define a function CheckQueueSize (Ptr<Queue> queue, Ptr<NetDeviceFace> ndf) for record every 0.01s the numbers of data packets with different prefix(different flow) in the ndf <NetDeviceFace>  and the queue <Queue>

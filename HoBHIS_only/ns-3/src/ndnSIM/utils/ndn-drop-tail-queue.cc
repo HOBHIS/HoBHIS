@@ -111,6 +111,10 @@ NDNDropTailQueue::DoEnqueue (Ptr<Packet> p)
 		Ptr<ndn::InterestHeader> header = Create<ndn::InterestHeader> ();
 		Ptr<Packet> nack_p = copy->Copy();
 		nack_p->RemoveHeader (*header);
+		/*
+		 * Get NACK type Returns NACK_LOOP, NACK_CONGESTION or NACK_GIVEUP_PIT.
+		 * Otherwise, in case of normal interest packet, returns NORMAL_INTEREST (equals 0).
+		 */
 		nack = header->GetNack();
 	}
 
@@ -118,7 +122,7 @@ NDNDropTailQueue::DoEnqueue (Ptr<Packet> p)
 	if(type == ndn::HeaderHelper::CONTENT_OBJECT_NDNSIM ||
 			type == ndn::HeaderHelper::CONTENT_OBJECT_CCNB ||
 			((type ==ndn::HeaderHelper::INTEREST_NDNSIM ||
-					type == ndn::HeaderHelper::INTEREST_CCNB) && nack == 0))
+					type == ndn::HeaderHelper::INTEREST_CCNB) && nack == 0 /*normal*/ ))
 	{
 		if (m_mode == QUEUE_MODE_PACKETS &&(m_packets.size () >= m_maxPackets))
 		{

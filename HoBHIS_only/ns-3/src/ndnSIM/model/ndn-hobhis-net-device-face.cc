@@ -130,6 +130,7 @@ HobhisNetDeviceFace::SendImpl (Ptr<Packet> p)
 		Ptr<Packet> nack_p = p->Copy();
 		nack_p->RemoveHeader (*header);
 		nack = header->GetNack();
+		//NACK
 
 		if(this->HobhisEnabled() && ! this->ClientServer() && nack == 0)
 		{
@@ -179,7 +180,7 @@ HobhisNetDeviceFace::SendImpl (Ptr<Packet> p)
 
 				return true;
 			}
-			else
+			else //Nack , or not client or server ou hohbis no enabled
 			{
 				NS_LOG_LOGIC(this << " Tail drop");
 				return false;
@@ -207,7 +208,7 @@ HobhisNetDeviceFace::SendImpl (Ptr<Packet> p)
 			m_outContentSize += (p->GetSize() - m_outContentSize) / 8.0; // smoothing
 		}
 
-		return NetDeviceFace::SendImpl (p); // no shaping for content packets
+		return NetDeviceFace::SendImpl (p); // no shaping for content packets, ndnsim's method
 	}
 	default:
 		return false;
@@ -215,6 +216,9 @@ HobhisNetDeviceFace::SendImpl (Ptr<Packet> p)
 }
 
 
+/*
+ * we start to shaper rate from the interest queue > 1 (in the face)
+ */
 void
 HobhisNetDeviceFace::ShaperOpen ()
 {
@@ -284,7 +288,7 @@ void HobhisNetDeviceFace::ShaperSend()
 
 	// insert the sending into sending table
 	std::map<ndn::Name, STimeEntry>::iterator
-	fit(sendtable.find(prefix)),
+	fit(sendtable.find(prefix)), //TODO pour total for the router
 	fend(sendtable.end());
 	if (fit == fend)
 	{
@@ -295,6 +299,8 @@ void HobhisNetDeviceFace::ShaperSend()
 	ShaperOpen();
 }
 
+// this is the method for count the real interest rate
+// attention : ici on utilise le table de sending, donc on utilise le total
 Time HobhisNetDeviceFace::ComputeGap()
 {
 	// get the first packet

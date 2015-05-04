@@ -181,7 +181,7 @@ private:
    */
   Time ComputeGap();
 
-  /// interest queue
+  /// interest queue in the face
   std::queue<Ptr<Packet> > m_interestQueue;
 
   /// the max size of interest queue
@@ -230,8 +230,9 @@ private:
   ///no use
   std::map<ndn::Name, bool> m_InterestFirst;
 
-  ///map for each type of interest
+  ///map for each type of interest in the face
   std::map <ndn::Name, uint32_t> m_nIntQueueSizePerFlow;
+
  // std::map<ndn::Name, uint64_t> m_InFaceBW;
   bool m_dynamic_design;
  };

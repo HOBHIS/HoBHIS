@@ -149,6 +149,7 @@ HobhisNetDeviceFace::SendImpl (Ptr<Packet> p)
 				std::map<ndn::Name, uint32_t>::iterator
 				iqit(m_nIntQueueSizePerFlow.find(prefix)),
 				iqend(m_nIntQueueSizePerFlow.end());
+
 				if (iqit == iqend)
 				{
 					m_nIntQueueSizePerFlow.insert(std::pair<ndn::Name, uint32_t>(prefix, 1));
@@ -157,6 +158,8 @@ HobhisNetDeviceFace::SendImpl (Ptr<Packet> p)
 				{
 					uint32_t & queue_size = iqit->second;
 					uint32_t qs = queue_size;
+
+					//TODO
 					if(qs + 1 <= m_maxInterest)
 						queue_size++;
 				}
@@ -164,29 +167,29 @@ HobhisNetDeviceFace::SendImpl (Ptr<Packet> p)
 				if (m_shaperState == OPEN)
 				{
 					if (m_outInterestFirst)
-						{
-							m_outInterestSize = p->GetSize(); // first sample
-							m_outInterestFirst = false;
-							ShaperSend();
-						}
-						else
-						{
-							m_outInterestSize += (p->GetSize() - m_outInterestSize) / 8.0; // smoothing
-							ShaperDequeue();
-						}
+					{
+						m_outInterestSize = p->GetSize(); // first sample
+						m_outInterestFirst = false;
+						ShaperSend();
+					}
+					else
+					{
+						m_outInterestSize += (p->GetSize() - m_outInterestSize) / 8.0; // smoothing
+						ShaperDequeue();
+					}
 
 					//	return NetDeviceFace::SendImpl (p);
 				}
 
 				return true;
 			}
-			else //Nack , or not client or server ou hohbis no enabled
+			else
 			{
 				NS_LOG_LOGIC(this << " Tail drop");
 				return false;
 			}
 		}
-		else
+		else //Nack , or client or server ou hohbis no enabled
 		{
 			return NetDeviceFace::SendImpl (p);
 		}

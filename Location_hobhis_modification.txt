@@ -8,6 +8,10 @@ Nouveaux fichiers:
 5)HoBHIS/HoBHIS_only/ns-3/src/ndnSIM/utils/ndn-drop-tail-queue.h
 6)HoBHIS/HoBHIS_only/ns-3/src/ndnSIM/utils/ndn-drop-tail-queue.h
 	NDNDropTailQueue is san class of Queue
+	ndn_shr_entry.h
+	ndn_shr_entry.cc
+	ndn_send_time_entry.h
+	ndn_send_time_entry.cc
 
 Fichiers modifiés:
 

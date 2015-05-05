@@ -203,10 +203,10 @@ private:
   /// the first content packet in out_packet_queue, called by sendImp()
   bool m_outContentFirst;
   double m_outContentSize; /// the size of the content packet
-  bool m_outInterestFirst; /// the first interest packet in the interest queue
+  bool m_outInterestFirst; /// the first time to send interest packet
   double m_outInterestSize;/// the size of the interest packet
 
-  bool m_inContentFirst; /// the first element of the input queue of content packet
+  bool m_inContentFirst; /// the first time to send the content packet
   double m_inContentSize;/// the content packet size
 
 //  uint64_t m_backBW;

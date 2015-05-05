@@ -274,6 +274,8 @@ ForwardingStrategy::OnData (Ptr<Face> inFace,
 	}
 
 	Ptr<NetDeviceFace> ndf_in = StaticCast<NetDeviceFace>(inFace);
+
+	//the case where we use hobhis+++++++++++++++++++++++++++++++++
 	if(ndf_in->HobhisEnabled() && ! ndf_in->ClientServer())
 		NDNComputeRTT(inFace, header, payload, origPacket);
 }
@@ -288,7 +290,7 @@ ForwardingStrategy::NDNComputeRTT(Ptr<Face> inFace,
 
 	ndn::Name prefix = header->GetName ();
 
-	std::map <ndn::Name, STimeEntry> & sendtable = inFace->GetSendingTable();
+	std::map <ndn::Name, STimeEntry> & sendtable = inFace->GetSendingTable();///////////////////////////
 
 	std::map<ndn::Name, STimeEntry>::iterator
 	stit(sendtable.find(prefix)),
@@ -301,7 +303,7 @@ ForwardingStrategy::NDNComputeRTT(Ptr<Face> inFace,
 	else return;
 
 	//+++++++++++++++++++++++++++++++++++++++++++++
-	std::map <ndn::Name, ShrEntry> & shtable = inFace->GetShapingTable();
+	std::map <ndn::Name, ShrEntry> & shtable = inFace->GetShapingTable();//////////////////////////////
 
 	std::map<ndn::Name, ShrEntry>::iterator
 	fit(shtable.find(prefix.cut(1))),

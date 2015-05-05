@@ -128,6 +128,10 @@ public:
   virtual void
   WillRemoveFibEntry (Ptr<fib::Entry> fibEntry);
   
+  /**
+   * \brief compute the RTT, called by onDate(); no included in ndnsim
+   *
+   */
   void  NDNComputeRTT(Ptr<Face> inFace,
  		  	  	  	  Ptr<const ContentObjectHeader> header,
  		  	  	  	  Ptr<Packet> payload,

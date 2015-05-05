@@ -367,8 +367,8 @@ Time HobhisNetDeviceFace::ComputeGap()
 
   	  	  	  	  	if(x > 1.0) {bw1 = double(bw/x);}
 		 */
-		buf_part = m_design * double(m_target*queue_rel - qlen_flow)/rtt; //recalculer the buf size
-		m_shapingRate = double(bw)/(8.0 * m_inContentSize) + buf_part; //recalculer the shaping Rate
+		buf_part = m_design * double(m_target*queue_rel - qlen_flow)/rtt; //recalculer the buf size (3)
+		m_shapingRate = double(bw)/(8.0 * m_inContentSize) + buf_part; //recalculer the shaping Rate r(t)
 	}
 	else m_shapingRate = double(bw)/(8.0 * m_outInterestSize);  // rtt == -1 ->  there isn't rtt in the interest packet
 
@@ -379,7 +379,7 @@ Time HobhisNetDeviceFace::ComputeGap()
 
 	if(m_shapingRate >= out_rate_in_interests) //shaping rate > out rate
 	{
-		m_shapingRate = out_rate_in_interests/fl_num;
+		m_shapingRate = out_rate_in_interests/fl_num; // par flux
 
 		gap = Seconds(0.0);  // there isn't the gap
 	}

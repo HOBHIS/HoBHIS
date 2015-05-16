@@ -319,8 +319,10 @@ void HobhisNetDeviceFace::ShaperSend()
 Time HobhisNetDeviceFace::ComputeGap()
 {
 	// get the first packet
+	/// For each time the first sending packet
 	Ptr<Packet> p = m_interestQueue.front ()->Copy();
 
+	/// There is packet in treating, so we blocked to make sure new packet sending packet can't be send in the moment
 	m_shaperState = BLOCKED; // blocked
 
 	Ptr<Packet> packet = p->Copy ();
@@ -330,9 +332,9 @@ Time HobhisNetDeviceFace::ComputeGap()
 
 	double rtt = -1.0; // rtt
 	double buf_part = 0;
-	uint64_t bw = GetInFaceBW(prefix.cut(1)); // band width
-	double qlen = 0.0; // queue length
-	double qlen_flow = 0.0; //queue flow length
+	uint64_t bw = GetInFaceBW(prefix.cut(1)); // band width of a hobhis-face, in which this Interest packet arrive. It's like the BW for out-sending-back date
+	double qlen = 0.0; // queue length of the data queue in a corresponding hobhis-face
+	double qlen_flow = 0.0; //queue length per flow of the data queue in a corresponding hobhis-face
 	double queue_rel = 1.0;
 	double fl_num = 1.0;
 	uint32_t max_chunks;
@@ -351,12 +353,15 @@ Time HobhisNetDeviceFace::ComputeGap()
 	fit(shtable.find(prefix.cut(1))),
 	fend(shtable.end()); //end of the table
 
-	//we find it
+	//we find it, the ShrEntry is a valuer for a prefix
 	if (fit != fend) {
 		ShrEntry & values = fit->second;
+		/// A(t)
 		rtt = values.get_rtt(); //  rtt of interest who has the prefix
+		/// Data queue
 		qlen_flow = values.get_queue_length();
 		qlen = values.get_total_queue_length();
+		/// valuer of other hobhis_face, in its data queue, these data packets with the same prefix are enqueueing for sending
 		max_chunks = values.get_max_chunks();
 	}
 	double flows = GetFlowNumber();
@@ -382,9 +387,12 @@ Time HobhisNetDeviceFace::ComputeGap()
 		buf_part = m_design * double(m_target*queue_rel - qlen_flow)/rtt; //recalculer the buf size (3)
 		m_shapingRate = double(bw)/(8.0 * m_inContentSize) + buf_part; //recalculer the shaping Rate r(t)
 	}
+	/// when we don't have the valuer RTT(A(t)) nether the m_inContentSize, we use the max rate with the BW of the corresponding hobhis_face
+	/// So at first, the number of packet will increase
 	else m_shapingRate = double(bw)/(8.0 * m_outInterestSize);  // rtt == -1 ->  there isn't rtt in the interest packet
 
 
+	/// Max Interest rate
 	double out_rate_in_interests = double(m_outBitRate)/(8.0 * m_outInterestSize);
 
 	Time gap = Seconds(0.0);//initalization
@@ -454,6 +462,8 @@ HobhisNetDeviceFace::ReceiveFromNetDevice (Ptr<NetDevice> device,
 		NS_LOG_DEBUG("Receive Data from netdevice");
 		if (m_inContentFirst)
 		{
+			/// Statistic for all the incoming data packet for get the outgoing data rate(C(t)) by being divide par BW of the outgoing hobhis_face
+			/// But if there are two out-sending data queues with different prefix and different packet size, C(t) should be computed independently, it means, we have to save two different m_inContentSize valuer, so there is a problem.
 			m_inContentSize = p->GetSize(); // first sample
 			m_inContentFirst = false;
 		}

@@ -96,6 +96,8 @@ public:
    * If we don't find it, we will insert it.
    * If we find it, we will change the value of the band width）
    *
+   * Important! it should be the BW of other hobhis_face, in which a Interest packet with this prefix arrive
+   *
    * \param prefix the prefix of a interest
    * \parma bw the value of the band width
    */

@@ -99,6 +99,7 @@ HobhisNetDeviceFace::HobhisNetDeviceFace (Ptr<Node> node, const Ptr<NetDevice> &
 	DataRateValue dataRate;
 	netDevice->GetAttribute ("DataRate", dataRate);
 	m_outBitRate = dataRate.Get().GetBitRate();
+	/// Data out rate (m_outBitRate) should be the target Interest rate (m_shapingRate) for a Related Hobhis_Face， but not this one in which we get the Date rate
 	m_shapingRate = m_outBitRate; // assume symmetric bandwidth
 }
 
@@ -138,20 +139,26 @@ HobhisNetDeviceFace::SendImpl (Ptr<Packet> p)
 			Ptr<InterestHeader> header = Create<InterestHeader> ();
 			packet->RemoveHeader (*header);
 			NS_LOG_DEBUG("Interest packet, router");
+			/// M_interestQueue is Interest queue
 			NS_LOG_LOGIC(this << " shaper qlen: " << m_interestQueue.size());
+			/// Get the sending packet prefix
 			ndn::Name prefix = header->GetName ().cut(1);
 
+			/// Packet sent to Hobhis_Face enqueue after being treated
 			if(m_interestQueue.size() + 1 <= m_maxInterest)
 			{
 				// Enqueue success
 				m_interestQueue.push(p);
 
+				/// Search in the Interest queue for different prefixs and update the number of packet by prefix
 				std::map<ndn::Name, uint32_t>::iterator
 				iqit(m_nIntQueueSizePerFlow.find(prefix)),
 				iqend(m_nIntQueueSizePerFlow.end());
 
+				/// If not found this flow
 				if (iqit == iqend)
 				{
+					/// Create this flow information
 					m_nIntQueueSizePerFlow.insert(std::pair<ndn::Name, uint32_t>(prefix, 1));
 				}
 				else
@@ -164,8 +171,10 @@ HobhisNetDeviceFace::SendImpl (Ptr<Packet> p)
 						queue_size++;
 				}
 
+				/// M_shaperState == OPEN, shaper enabled
 				if (m_shaperState == OPEN)
 				{
+					/// Is the first Interest packet
 					if (m_outInterestFirst)
 					{
 						m_outInterestSize = p->GetSize(); // first sample
@@ -174,6 +183,7 @@ HobhisNetDeviceFace::SendImpl (Ptr<Packet> p)
 					}
 					else
 					{
+						/// Smoothing m_outInterestSize
 						m_outInterestSize += (p->GetSize() - m_outInterestSize) / 8.0; // smoothing
 						ShaperDequeue();
 					}
@@ -295,8 +305,10 @@ void HobhisNetDeviceFace::ShaperSend()
 	fend(sendtable.end());
 	if (fit == fend)
 	{
+		/// If not found, create a mapping: a prefix and a STimeEntry
 		sendtable.insert(std::pair<ndn::Name, STimeEntry>(prefix, STimeEntry(Simulator::Now().GetSeconds())));
 	}
+	/// Else why not update sendtable?
 	// send out the interest
 	NetDeviceFace::SendImpl (p);
 	ShaperOpen();

@@ -6,7 +6,7 @@ Nouveaux fichiers:
 4)HoBHIS/HoBHIS_only/ns-3/src/ndnSIM/model/ndn-hobhis-net-device-face.cc
 	HobhisNetDeviceFace is san class of NetDeviceFace, see also ndn-net-device-face.h/.cc and ndn-face.h/.cc
 5)HoBHIS/HoBHIS_only/ns-3/src/ndnSIM/utils/ndn-drop-tail-queue.h
-6)HoBHIS/HoBHIS_only/ns-3/src/ndnSIM/utils/ndn-drop-tail-queue.h
+6)HoBHIS/HoBHIS_only/ns-3/src/ndnSIM/utils/ndn-drop-tail-queue.cc
 	NDNDropTailQueue is san class of Queue
 	ndn_shr_entry.h
 	ndn_shr_entry.cc

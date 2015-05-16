@@ -191,6 +191,7 @@ private:
   double m_shapingRate;
 
   /// the out rate
+  /// The Data out rate in one Hobhis_Face
   uint64_t m_outBitRate;
 
 //for shaping rate computation
@@ -204,6 +205,7 @@ private:
   bool m_outContentFirst;
   double m_outContentSize; /// the size of the content packet
   bool m_outInterestFirst; /// the first time to send interest packet
+  /// The smoothing size of the out-sending interest packet
   double m_outInterestSize;/// the size of the interest packet
 
   bool m_inContentFirst; /// the first time to send the content packet
@@ -231,6 +233,7 @@ private:
   std::map<ndn::Name, bool> m_InterestFirst;
 
   ///map for each type of interest in the face
+  /// Table for mapping a prefix and the flow number with this prefix (queue size)
   std::map <ndn::Name, uint32_t> m_nIntQueueSizePerFlow;
 
  // std::map<ndn::Name, uint64_t> m_InFaceBW;

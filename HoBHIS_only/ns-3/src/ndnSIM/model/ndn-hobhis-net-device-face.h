@@ -41,6 +41,11 @@ namespace ndn {
 class HobhisNetDeviceFace  : public NetDeviceFace
 {
 public:
+
+  /**
+   * \brief Get these Face Attributes
+   *
+   */
   static TypeId
   GetTypeId ();
 
@@ -60,14 +65,15 @@ public:
   virtual ~HobhisNetDeviceFace();
 
   /**
-   * \brief get the current interest queue length
+   * \brief Get the interest queue length of this Face
    *
-   * \return the size of the m_interestQueue
+   * \return the size of the interest queue of this Face
    */
   uint32_t GetQueueLength() {return m_interestQueue.size();};
 
   /**
-   * \brief no implementation
+   * \brief no implementation yet
+   *
    */
   bool SetSendingTime(ndn::NameComponents prefix,
 		  	  	   	  double stime);
@@ -75,52 +81,44 @@ public:
 //  void SetBackBW(double bndwth) {m_backBW = bndwth;};
 
   /**
-   * \brief get the value of the m_hobhisEnabled
-   * if we set HoBHIS enable
+   * \brief Check if the Hobhis function is enable in this Face
    *
-   * \return m_hobHisEnabled
+   * \return True if the Hobhis function is enable; False if the Hobhis function is disable
    */
   bool HobhisEnabled() {return m_hobhisEnabled;};
 
   /**
-   * \brief get the value of the m_client_server
-   * if the node is client or server, or another
+   * \brief Check if the node is a client - server or a Intermediate node
    *
-   * \return m_client_server
+   * \return True if the node is a client - server; False if the node is a Intermediate node
    */
   bool ClientServer() {return m_client_server;};
 
   /**
-   * \brief set the band width for a interest
-   * （first of all, we search the interest in the table of face.
-   * If we don't find it, we will insert it.
-   * If we find it, we will change the value of the band width）
+   * \brief write the band width of a Face in which an Interest who has a specific prefix arrived into a public table: InFaceBWTable
    *
-   * Important! it should be the BW of other hobhis_face, in which a Interest packet with this prefix arrive
+   * This function could be use only once for the same prefix
    *
-   * \param prefix the prefix of a interest
-   * \parma bw the value of the band width
+   * \param prefix the prefix of an Interest
+   * \parma bw the value of the band width of a Face in which an Interest who has this prefix arrived
    */
   void SetInFaceBW(ndn::Name prefix, uint64_t bw);
 
   /**
-   * \brief get the band width of a interest
-   * first of all, we search the interest in the table of face.
-   * If we don't find it, we will insert it.
-   * If we find it, we will change the value of the band width
+   * \brief get the band width of a Face in which an Interest who has a specific prefix arrived from a public table: InFaceBWTable
    *
-   * \param prefix prefix of interest
+   * \param prefix the prefix of an Interest
    *
-   * \return value of the band width
+   * \return value of the band width of a Face in which an Interest who has a this prefix arrived from a public table: InFaceBWTable
    */
   uint64_t GetInFaceBW(ndn::Name prefix);
 
   /**
-   * \brief for each interest, it has its own queue for count the times request
+   * \brief get the number total of the Interest packet who has a specific prefix in the Interest queue
    *
-   * \param prefix the prefix of a interest
+   * \param prefix the prefix we want to calculate
    *
-   * \return the queue of a interest size	（the size of a interest queue）
+   * \return the number total of the Interest packet who has this prefix
    */
   uint32_t GetIntQueueSizePerFlow(ndn::Name prefix);
 
@@ -133,7 +131,7 @@ protected:
    * \brief send a packet
    * There are kinds of cas :
    * 1. INTEREST PACKET
-   * 	a. server
+   * 	a. server will send the
    * 	b. client
    * 	c. another type node
    * 2. CONTENT PACKET
@@ -141,29 +139,45 @@ protected:
    * 	b. client
    * 	c. another type node
    *
-   * \param p Ptr<Packet>
+   * \param p a packet will be sent, it could be Data or Interest
    */
   virtual bool
   SendImpl (Ptr<Packet> p);
 
-  ///face of the router
-  Ptr<Face> inFace;
+  Ptr<Face> inFace; ///< \brief no used
 private:
   HobhisNetDeviceFace (const HobhisNetDeviceFace &); ///< \brief Disabled copy constructor
   HobhisNetDeviceFace& operator= (const HobhisNetDeviceFace &); ///< \brief Disabled copy operator
 
 
   /**
-   * \brief open the shaper
+   * \brief control sending Interest packet from the Interest queue and if the queue is idle set a OPEN flag for this queue
+   *
+   * Call by ShaperDequeue () and ShaperSend()
+   *
+   * \see SendImpl (Ptr<Packet> p), ShaperDequeue () and ShaperSend()
    */
   void ShaperOpen ();
 
   /**
-   * \brief set those parameters pour send packet
-   * call by ShaperOpen()
+   * \brief send Interest packet from the Interest queue
+   *
+   * Call by SendImpl (Ptr<Packet> p) and ShaperOpen()
+   *
+   * \see SendImpl (Ptr<Packet> p), ShaperOpen () and ShaperSend()
    */
   void ShaperDequeue ();
 
+  /**
+   * \brief Call when this Face receive a packet for calculate the average Data size received in this Face
+   *
+   * \param device the device associated to this Face
+   * \param p the packet received in this Face
+   * \param protocol the protocol of this packet
+   * \param from the destination of this packet
+   * \param to the source of this packet
+   * \param packetType the packet type of this packet
+   */
   virtual void ReceiveFromNetDevice (Ptr<NetDevice> device,
                              Ptr<const Packet> p,
                              uint16_t protocol,
@@ -172,74 +186,63 @@ private:
                              NetDevice::PacketType packetType);
 
   /**
-   * \brief send the interest, call by sendImp()
+   * \brief send the Interest packet
+   *
+   * Call by sendImp() and ShaperDequeue ()
+   *
+   * \see SendImpl (Ptr<Packet> p), ShaperOpen () and ShaperDequeue ()
    */
   void ShaperSend();
 
   /**
-   * \brief compute the time between two interests sent
-   * by compute the m_shappingRate
-   * called by ShapperDqueue()
+   * \brief compute the Interests Shaping delay
+   *
+   * Call by ShaperDequeue ()
+   *
+   * \return the delay for sending an Interest
    */
   Time ComputeGap();
 
-  /// interest queue in the face
-  std::queue<Ptr<Packet> > m_interestQueue;
+  std::queue<Ptr<Packet> > m_interestQueue; ///< \brief Interest queue in the face
 
-  /// the max size of interest queue
-  uint32_t m_maxInterest;
+  uint32_t m_maxInterest; ///< \brief the max size of interest queue
 
-  /// the rate of shape
-  double m_shapingRate;
+  double m_shapingRate; ///< \brief the Interest shaping rate
 
-  /// the out rate
-  /// The Data out rate in one Hobhis_Face
-  uint64_t m_outBitRate;
+  uint64_t m_outBitRate;  ///< \brief the Data out rate in the Face
 
-//for shaping rate computation
-  double m_design;
+  double m_design; ///< \brief h
 
-  /// the target
-  uint32_t m_target;
+  uint32_t m_target; ///< \brief the target size of the Data queue of others Face
 
 
-  /// the first content packet in out_packet_queue, called by sendImp()
-  bool m_outContentFirst;
-  double m_outContentSize; /// the size of the content packet
-  bool m_outInterestFirst; /// the first time to send interest packet
-  /// The smoothing size of the out-sending interest packet
-  double m_outInterestSize;/// the size of the interest packet
-
-  bool m_inContentFirst; /// the first time to send the content packet
-  double m_inContentSize;/// the content packet size
+  bool m_outContentFirst; ///< \brief if this sending Data packet is the first time send
+  double m_outContentSize; ///< \brief the average Data size sent
+  bool m_outInterestFirst; ///< \brief if this sending Interest packet is the first time to send
+  double m_outInterestSize; ///< \brief the average Interest size sent
+  bool m_inContentFirst; ///< \brief if this receiving Data packet is the first time received
+  double m_inContentSize; ///< \brief the average Data size sent
 
 //  uint64_t m_backBW;
 
-  /// enum states for shaper : 1. OPEN 2. BLOCKED
+  ///< \brief enum states for shaper : 1. OPEN 2. BLOCKED
    enum ShaperState
   {
     OPEN,
     BLOCKED
   };
 
-  /// shaper state
-  ShaperState m_shaperState;
+  ShaperState m_shaperState; ///< \brief shaper state
 
-  /// hobhis enable
-  bool m_hobhisEnabled;
+  bool m_hobhisEnabled; ///< \brief if hobhis is enable
 
-  /// node type
-  bool m_client_server;
+  bool m_client_server;  ///< \brief if the node is a client - server or a Intermediate node
 
   ///no use
-  std::map<ndn::Name, bool> m_InterestFirst;
+  std::map<ndn::Name, bool> m_InterestFirst; ///< \brief no used
 
-  ///map for each type of interest in the face
-  /// Table for mapping a prefix and the flow number with this prefix (queue size)
-  std::map <ndn::Name, uint32_t> m_nIntQueueSizePerFlow;
-
- // std::map<ndn::Name, uint64_t> m_InFaceBW;
-  bool m_dynamic_design;
+  std::map <ndn::Name, uint32_t> m_nIntQueueSizePerFlow; ///< \brief number total of the Interest packet who has a specific prefix in the Interes
+  bool m_dynamic_design;///< h
  };
 
 } // namespace ndn

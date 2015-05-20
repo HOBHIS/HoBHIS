@@ -30,12 +30,18 @@
 namespace ns3 {
 namespace ndn {
 
+
+/**
+ * \ingroup entry
+ *
+ * \brief a entry for saving these sending times
+ */
 class STimeEntry
 {
 
 private:
 
-	double m_stime;		// packet sending time
+	double m_stime; ///< \brief packet sending time
 
 
 public:
@@ -43,25 +49,35 @@ public:
 
 	/**
 	 * \brief Constructor.
-	 * \param prefix The prefix.
-	 * \param stime The Interest sending time
-	 * ...
+	 *
+	 * \param stime the Interest sending time
 	 */
-
 	STimeEntry(double stime);
 
 	// Getters/Setters
 
+	/**
+	 * \brief get the sending time from this entry
+	 *
+	 * \return the sending time from this entry
+	 */
 	inline double get_send_time() const {
 		return this->m_stime;
 	}
 
+	/**
+	 * \brief set the sending time to this entry
+	 *
+	 * \param stime the sending time should to be saved into this entry
+	 */
 	inline void set_send_time(double stime) {
 		this->m_stime = stime;
 	}
 
-	// Operators
-
+	/**
+	 * \brief operator
+	 *
+	 */
 	STimeEntry & operator = (const STimeEntry & rhs);
 
 	//bool operator < (const STimeEntry & rhs) const;
@@ -69,21 +85,20 @@ public:
 };
 
 /**
- * \brief Write the content of an STimeEntry instance.
- * \param out The output stream.
- * \param entry The STimeEntry instance we want to write.
- * \param out The updated output stream.
+ * \brief Write the content of an STimeEntry instance
+ *
+ * \param out The output stream or updated
+ * \param entry The STimeEntry instance we want to write
  */
-
 std::ostream & operator << (std::ostream & out, const STimeEntry & entry);
 
 /**
  * \brief Compare two STimeEntry instances
+ *
  * \param x The left operand
  * \param y The right operand
- * \param return true if x is less than y
+ * \return True if x is less than y, else False
  */
-
 bool operator < (const STimeEntry & x, const STimeEntry & y);
 } // end namespace ndn
 } // end namespace ns3

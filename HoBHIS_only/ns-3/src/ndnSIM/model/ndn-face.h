@@ -56,227 +56,289 @@ namespace ndn {
  * \see ndn::LocalFace, ndn::NetDeviceFace, ndn::Ipv4Face, ndn::UdpFace
  */
 class Face :
-    public Object
-{
-public:
-  static TypeId
-  GetTypeId ();
-  
-  /**
-   * \brief Ndn protocol handler
-   *
-   * \param face Face from which packet has been received
-   * \param packet Original packet
-   */
-  typedef Callback<void,const Ptr<Face>&,const Ptr<const Packet>& > ProtocolHandler;
+		public Object
+		{
+		public:
+	static TypeId
+	GetTypeId ();
 
-  /**
-   * \brief Default constructor
-   */
-  Face (Ptr<Node> node);
-  virtual ~Face();
+	/**
+	 * \brief Ndn protocol handler
+	 *
+	 * \param face Face from which packet has been received
+	 * \param packet Original packet
+	 */
+	typedef Callback<void,const Ptr<Face>&,const Ptr<const Packet>& > ProtocolHandler;
 
-  /**
-   * @brief Get node to which this face is associated
-   */
-  Ptr<Node>
-  GetNode () const;
+	/**
+	 * \brief Default constructor
+	 */
+	Face (Ptr<Node> node);
+	virtual ~Face();
 
-  ////////////////////////////////////////////////////////////////////
-  
-  /**
-   * \brief Register callback to call when new packet arrives on the face
-   *
-   * This method should call protocol-dependent registration function
-   */
-  virtual void
-  RegisterProtocolHandler (ProtocolHandler handler);
+	/**
+	 * @brief Get node to which this face is associated
+	 */
+	Ptr<Node>
+	GetNode () const;
 
-  /**
-   * \brief Send packet on a face
-   *
-   * This method will be called by lower layers to send data to device or application
-   *
-   * \param p smart pointer to a packet to send
-   *
-   * @return false if either limit is reached
-   */ 
-  bool
-  Send (Ptr<Packet> p);
+	////////////////////////////////////////////////////////////////////
 
-  /**
-   * \brief Receive packet from application or another node and forward it to the Ndn stack
-   *
-   * \todo The only reason for this call is to handle tracing, if requested
-   */
-  bool
-  Receive (const Ptr<const Packet> &p);
-  ////////////////////////////////////////////////////////////////////
+	/**
+	 * \brief Register callback to call when new packet arrives on the face
+	 *
+	 * This method should call protocol-dependent registration function
+	 */
+	virtual void
+	RegisterProtocolHandler (ProtocolHandler handler);
 
-  /**
-   * \brief Assign routing/forwarding metric with face
-   *
-   * \param metric configured routing metric (cost) of this face
-   */
-  virtual void SetMetric (uint16_t metric);
+	/**
+	 * \brief Send packet on a face
+	 *
+	 * This method will be called by lower layers to send data to device or application
+	 *
+	 * \param p smart pointer to a packet to send
+	 *
+	 * @return false if either limit is reached
+	 */
+	bool
+	Send (Ptr<Packet> p);
 
-  /**
-   * \brief Get routing/forwarding metric assigned to the face
-   *
-   * \returns configured routing/forwarding metric (cost) of this face
-   */
-  virtual uint16_t GetMetric (void) const;
+	/**
+	 * \brief Receive packet from application or another node and forward it to the Ndn stack
+	 *
+	 * \todo The only reason for this call is to handle tracing, if requested
+	 */
+	bool
+	Receive (const Ptr<const Packet> &p);
+	////////////////////////////////////////////////////////////////////
 
-  /**
-   * These are face states and may be distinct from actual lower-layer
-   * device states, such as found in real implementations (where the
-   * device may be down but ndn face state is still up).
-   */
-  
-  /**
-   * \brief Enable or disable this face
-   */
-  virtual void
-  SetUp (bool up = true);
+	/**
+	 * \brief Assign routing/forwarding metric with face
+	 *
+	 * \param metric configured routing metric (cost) of this face
+	 */
+	virtual void SetMetric (uint16_t metric);
 
-  /**
-   * \brief Returns true if this face is enabled, false otherwise.
-   */
-  virtual bool
-  IsUp () const;
+	/**
+	 * \brief Get routing/forwarding metric assigned to the face
+	 *
+	 * \returns configured routing/forwarding metric (cost) of this face
+	 */
+	virtual uint16_t GetMetric (void) const;
 
-  /**
-   * @brief Print information about the face into the stream
-   * @param os stream to write information to
-   */
-  virtual std::ostream&
-  Print (std::ostream &os) const;
+	/**
+	 * These are face states and may be distinct from actual lower-layer
+	 * device states, such as found in real implementations (where the
+	 * device may be down but ndn face state is still up).
+	 */
 
-  /**
-   * \brief Set node Id
-   *
-   * Id is purely informative and should not be used for any other purpose
-   *
-   * \param id id to set
-   */
-  inline void
-  SetId (uint32_t id);
+	/**
+	 * \brief Enable or disable this face
+	 */
+	virtual void
+	SetUp (bool up = true);
 
-  /**
-   * \brief Get node Id
-   *
-   * Id is purely informative and should not be used for any other purpose
-   *
-   * \returns id id to set
-   */
-  inline uint32_t
-  GetId () const;
+	/**
+	 * \brief Returns true if this face is enabled, false otherwise.
+	 */
+	virtual bool
+	IsUp () const;
 
-  virtual bool CanEnqueueInterest(){return true;};
+	/**
+	 * @brief Print information about the face into the stream
+	 * @param os stream to write information to
+	 */
+	virtual std::ostream&
+	Print (std::ostream &os) const;
 
-  void SetCapacity(uint64_t dataRate);
-   uint64_t GetCapacity();
+	/**
+	 * \brief Set node Id
+	 *
+	 * Id is purely informative and should not be used for any other purpose
+	 *
+	 * \param id id to set
+	 */
+	inline void
+	SetId (uint32_t id);
 
-  /**
-   * \brief Compare two faces. Only two faces on the same node could be compared.
-   *
-   * Internal index is used for comparison.
-   */
-  bool
-  operator== (const Face &face) const;
+	/**
+	 * \brief Get node Id
+	 *
+	 * Id is purely informative and should not be used for any other purpose
+	 *
+	 * \returns id id to set
+	 */
+	inline uint32_t
+	GetId () const;
 
-  /**
-   * \brief Compare two faces. Only two faces on the same node could be compared.
-   *
-   * Internal index is used for comparison.
-   */
-  inline bool
-  operator!= (const Face &face) const;
-  
-  /**
-   * \brief Compare two faces. Only two faces on the same node could be compared.
-   *
-   * Internal index is used for comparison.
-   */
-  bool
-  operator< (const Face &face) const;
+	virtual bool CanEnqueueInterest(){return true;};
 
-  inline const std::map<ndn::Name, ShrEntry> & GetShapingTable() const {return this->m_shaping_table;}
-  inline std::map<ndn::Name, ShrEntry> & GetShapingTable() {return this->m_shaping_table;}
+	void SetCapacity(uint64_t dataRate);
+	uint64_t GetCapacity();
 
-  inline const std::map<ndn::Name, STimeEntry> & GetSendingTable() const {return this->m_send_time_table;}
-  inline std::map<ndn::Name, STimeEntry> & GetSendingTable() {return this->m_send_time_table;}
+	/**
+	 * \brief Compare two faces. Only two faces on the same node could be compared.
+	 *
+	 * Internal index is used for comparison.
+	 */
+	bool
+	operator== (const Face &face) const;
 
-  virtual bool HobhisEnabled(){return false;};
+	/**
+	 * \brief Compare two faces. Only two faces on the same node could be compared.
+	 *
+	 * Internal index is used for comparison.
+	 */
+	inline bool
+	operator!= (const Face &face) const;
 
-  virtual bool ClientServer(){return false;};
+	/**
+	 * \brief Compare two faces. Only two faces on the same node could be compared.
+	 *
+	 * Internal index is used for comparison.
+	 */
+	bool
+	operator< (const Face &face) const;
 
-  inline const std::map<ndn::Name, uint64_t> & GetInFaceBWTable() const {return this->m_InFaceBW;}
-  inline std::map<ndn::Name, uint64_t> & GetInFaceBWTable() {return this->m_InFaceBW;}
+	/**
+	 * \brief get the public shaping table type constant
+	 *
+	 * \return the public shaping table type constant
+	 */
+	inline const std::map<ndn::Name, ShrEntry> & GetShapingTable() const {return this->m_shaping_table;}
 
-  virtual void SetInFaceBW(ndn::Name prefix, uint64_t bw){};
-  void SetFlowNumber(double nflows){ m_Nflows = nflows;};
+	/**
+	 * \brief get the public shaping table
+	 *
+	 * \return the public shaping table
+	 */
+	inline std::map<ndn::Name, ShrEntry> & GetShapingTable() {return this->m_shaping_table;}
 
-  double GetFlowNumber(){return m_Nflows;};
-protected:
-  /**
-   * \brief Send packet on a face (actual implementation)
-   *
-   * \param p smart pointer to a packet to send
-   */
-  virtual bool
-  SendImpl (Ptr<Packet> p) = 0;  
+	/**
+	 * \brief get the public send time table type constant
+	 *
+	 * \return the public send time table type constant
+	 */
+	inline const std::map<ndn::Name, STimeEntry> & GetSendingTable() const {return this->m_send_time_table;}
 
-  uint64_t DRate;
+	/**
+	 * \brief get the public send time table
+	 *
+	 * \return the public send time table
+	 */
+	inline std::map<ndn::Name, STimeEntry> & GetSendingTable() {return this->m_send_time_table;}
 
-private:
-  Face (const Face &); ///< \brief Disabled copy constructor
-  Face& operator= (const Face &); ///< \brief Disabled copy operator
-  
-protected:
-  Ptr<Node> m_node; ///< \brief Smart pointer to Node
-  
-private:
-  ProtocolHandler m_protocolHandler; ///< Callback via which packets are getting send to Ndn stack
-  bool m_ifup; ///< \brief flag indicating that the interface is UP 
-  uint32_t m_id; ///< \brief id of the interface in Ndn stack (per-node uniqueness)
-  uint32_t m_metric; ///< \brief metric of the face
+	/**
+	 * \brief Check if the function Hobhis is enable for this Face
+	 *
+	 * For general Face, the return is false
+	 *
+	 * \return false for general Face
+	 */
+	virtual bool HobhisEnabled(){return false;};
 
-  TracedCallback<Ptr<const Packet> > m_txTrace;
-  TracedCallback<Ptr<const Packet> > m_rxTrace;
-  TracedCallback<Ptr<const Packet> > m_dropTrace;
+	/**
+	 * \brief Check if the node is a client - server or a Intermediate node
+	 *
+	 * For general Face, the return is false
+	 *
+	 * \return false for general Face
+	 */
+	virtual bool ClientServer(){return false;};
 
-  std::map<ndn::Name, ShrEntry> m_shaping_table;
-  std::map<ndn::Name, STimeEntry> m_send_time_table;
-  std::map<ndn::Name, uint64_t> m_InFaceBW;
+	/**
+	 * \brief get the public in face BW table type constant
+	 *
+	 * \return the public in face BW table type constant
+	 */
+	inline const std::map<ndn::Name, uint64_t> & GetInFaceBWTable() const {return this->m_InFaceBW;}
 
-  double m_Nflows;
-};
+	/**
+	 * \brief get the public in face BW table
+	 *
+	 * \return the public in face BW table
+	 */
+	inline std::map<ndn::Name, uint64_t> & GetInFaceBWTable() {return this->m_InFaceBW;}
+
+	/**
+	 * \brief set the public in face BW table
+	 *
+	 * actual implementation in file hobhis-net-device-face.cc
+	 *
+	 */
+	virtual void SetInFaceBW(ndn::Name prefix, uint64_t bw){};
+
+	/**
+	 * \brief set the number of flow
+	 *
+	 */
+	void SetFlowNumber(double nflows){ m_Nflows = nflows;};
+
+	/**
+	 * \brief get the number of flow
+	 *
+	 */
+	double GetFlowNumber(){return m_Nflows;};
+		protected:
+	/**
+	 * \brief Send packet on a face (actual implementation)
+	 *
+	 * \param p smart pointer to a packet to send
+	 */
+	virtual bool
+	SendImpl (Ptr<Packet> p) = 0;
+
+	uint64_t DRate;
+
+		private:
+	Face (const Face &); ///< \brief Disabled copy constructor
+	Face& operator= (const Face &); ///< \brief Disabled copy operator
+
+		protected:
+	Ptr<Node> m_node; ///< \brief Smart pointer to Node
+
+		private:
+	ProtocolHandler m_protocolHandler; ///< Callback via which packets are getting send to Ndn stack
+	bool m_ifup; ///< \brief flag indicating that the interface is UP
+	uint32_t m_id; ///< \brief id of the interface in Ndn stack (per-node uniqueness)
+	uint32_t m_metric; ///< \brief metric of the face
+
+	TracedCallback<Ptr<const Packet> > m_txTrace;
+	TracedCallback<Ptr<const Packet> > m_rxTrace;
+	TracedCallback<Ptr<const Packet> > m_dropTrace;
+
+	std::map<ndn::Name, ShrEntry> m_shaping_table; ///< \brief the public shaping table
+	std::map<ndn::Name, STimeEntry> m_send_time_table; ///< \brief the public send time table
+	std::map<ndn::Name, uint64_t> m_InFaceBW; ///< \brief the public in face BW table
+
+	double m_Nflows;
+		};
 
 std::ostream& operator<< (std::ostream& os, const Face &face);
 
 inline bool
 operator < (const Ptr<Face> &lhs, const Ptr<Face> &rhs)
 {
-  return *lhs < *rhs;
+	return *lhs < *rhs;
 }
 
 void
 Face::SetId (uint32_t id)
 {
-  m_id = id;
+	m_id = id;
 }
 
 uint32_t
 Face::GetId () const
 {
-  return m_id;
+	return m_id;
 }
 
 inline bool
 Face::operator!= (const Face &face) const
 {
-  return !(*this == face);
+	return !(*this == face);
 }
 
 } // namespace ndn

@@ -308,9 +308,9 @@ class Face :
 	TracedCallback<Ptr<const Packet> > m_rxTrace;
 	TracedCallback<Ptr<const Packet> > m_dropTrace;
 
-	std::map<ndn::Name, ShrEntry> m_shaping_table; ///< \brief the public shaping table
-	std::map<ndn::Name, STimeEntry> m_send_time_table; ///< \brief the public send time table
-	std::map<ndn::Name, uint64_t> m_InFaceBW; ///< \brief the public in face BW table
+	std::map<ndn::Name, ShrEntry> m_shaping_table; ///< \brief the private shaping table
+	std::map<ndn::Name, STimeEntry> m_send_time_table; ///< \brief the private send time table
+	std::map<ndn::Name, uint64_t> m_InFaceBW; ///< \brief the private in face BW table
 
 	double m_Nflows;
 		};

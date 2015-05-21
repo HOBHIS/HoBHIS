@@ -455,10 +455,29 @@ protected:
                        Ptr<const Packet> origPacket,
                        Ptr<pit::Entry> pitEntry) = 0;
 
+  /**
+   * \brief Update the total queue size and the queue size per flow for the shaping table
+   *
+   * Once this function is called, it will call itself with the same parameters
+   *
+   * \param inFace      incoming face
+   * \param outFace     outgoing face
+   * \param prefix 		the prefix for packet
+   */
   void UpdateShRQLen(Ptr<Face> inFace, Ptr<Face> outFace, ndn::Name prefix);
 
+  /**
+   * \brief print the shaping table of a Face
+   *
+   * \param inFace      the face of which we want to print the shaping table
+   */
   void  PrintShapingTable(Ptr<Face> inFace);
 
+  /**
+   * \brief print the sending table of a Face
+   *
+   * \param inFace      the face of which we want to print the sending table
+   */
   void  PrintSendingTable(Ptr<Face> inFace);
 
 protected:

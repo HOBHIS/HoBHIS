@@ -26,6 +26,9 @@
 namespace ns3 {
 namespace ndn {
 
+/**
+ * \ingroup ndn-app
+ */
 class ConsumerWindowRAAQM: public ConsumerWindow
 {
 public:

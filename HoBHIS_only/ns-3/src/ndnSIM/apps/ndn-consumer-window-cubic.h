@@ -25,6 +25,9 @@
 namespace ns3 {
 namespace ndn {
 
+/**
+ * \ingroup ndn-app
+ */
 class ConsumerWindowCUBIC: public ConsumerWindow
 {
 public:

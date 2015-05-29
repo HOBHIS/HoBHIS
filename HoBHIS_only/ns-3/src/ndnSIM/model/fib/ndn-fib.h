@@ -33,7 +33,7 @@ class InterestHeader;
 
 /**
  * \ingroup ndn
- * \defgroup ndn-fib Fib
+ * \defgroup ndn-fib FIB
  */
 
 /**

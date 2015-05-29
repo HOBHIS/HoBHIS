@@ -38,10 +38,16 @@ class Face;
 
 /**
  * @ingroup ndn
+ * @defgroup ndn-app APP
+ */
+
+/**
+ * @ingroup ndn-app
  * @brief Base class that all NDN applications should be derived from.
  * 
  * The class implements virtual calls onInterest, onNack, and onContentObject
  */
+
 class App: public Application
 {
 public:

@@ -28,7 +28,7 @@ namespace ns3 {
 namespace ndn {
 
 /**
- * @ingroup ndn
+ * @ingroup ndn-app
  * \brief Ndn application for sending out Interest packets at a "constant" rate (Poisson process)
  */
 class ConsumerCbr: public Consumer

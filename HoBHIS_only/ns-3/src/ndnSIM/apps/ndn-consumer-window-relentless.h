@@ -16,6 +16,10 @@
  * Author: Yaogong Wang <ywang15@ncsu.edu>
  */
 
+/**
+ * \ingroup ndn-app
+ */
+
 #ifndef NDN_CONSUMER_WINDOW_RELENTLESS_H
 #define NDN_CONSUMER_WINDOW_RELENTLESS_H
 

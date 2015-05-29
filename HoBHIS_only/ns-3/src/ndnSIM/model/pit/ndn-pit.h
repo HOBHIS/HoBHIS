@@ -42,6 +42,7 @@ class InterestHeader;
  * \ingroup ndn
  * \defgroup ndn-pit PIT
  */
+
 /**
  * \ìngroup ndn-pit
  * \brief Class implementing Pending Interests Table

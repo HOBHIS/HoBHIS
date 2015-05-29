@@ -83,7 +83,7 @@ class i_retx {};
 
 
 /**
- * \ìngroup ndn-pit
+ * \ingroup ndn-pit
  * \brief structure for PIT entry
  *
  * All set-methods are virtual, in case index rearrangement is necessary in the derived classes

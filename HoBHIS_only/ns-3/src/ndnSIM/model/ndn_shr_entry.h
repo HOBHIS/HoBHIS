@@ -30,8 +30,7 @@ namespace ns3 {
 namespace ndn {
 
 /**
- * \ingroup entry
- *
+ * \ingroup ndn
  * \brief a entry for saving these informations for shaping
  */
 class ShrEntry

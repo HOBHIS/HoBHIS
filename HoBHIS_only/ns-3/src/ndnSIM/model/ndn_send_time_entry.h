@@ -32,9 +32,9 @@ namespace ndn {
 
 
 /**
- * \ingroup entry
- *
+ * \ingroup ndn
  * \brief a entry for saving these sending times
+ *
  */
 class STimeEntry
 {

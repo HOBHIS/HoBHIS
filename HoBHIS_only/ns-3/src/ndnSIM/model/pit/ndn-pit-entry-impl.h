@@ -28,6 +28,9 @@ class Pit;
 
 namespace pit {
 
+/**
+ * \ìngroup ndn-pit
+ */
 template<class Pit>
 class EntryImpl : public Entry
 {

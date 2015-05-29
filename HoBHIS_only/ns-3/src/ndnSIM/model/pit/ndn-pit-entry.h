@@ -54,7 +54,7 @@ class i_retx {};
 /// @endcond
 
 /**
- * \ingroup ndn
+ * \ìngroup ndn-pit
  * \brief Typedef for indexed face container of PitEntryOutgoingFace
  *
  * Indexes:
@@ -83,7 +83,7 @@ class i_retx {};
 
 
 /**
- * \ingroup ndn
+ * \ìngroup ndn-pit
  * \brief structure for PIT entry
  *
  * All set-methods are virtual, in case index rearrangement is necessary in the derived classes

@@ -40,6 +40,10 @@ class InterestHeader;
 
 /**
  * \ingroup ndn
+ * \defgroup ndn-pit PIT
+ */
+/**
+ * \ìngroup ndn-pit
  * \brief Class implementing Pending Interests Table
  */
 class Pit : public Object

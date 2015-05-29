@@ -37,7 +37,7 @@ class ForwardingStrategy;
 namespace pit {
 
 /**
- * \ingroup ndn
+ * \ìngroup ndn-pit
  * \brief Class implementing Pending Interests Table
  */
 template<class Policy>

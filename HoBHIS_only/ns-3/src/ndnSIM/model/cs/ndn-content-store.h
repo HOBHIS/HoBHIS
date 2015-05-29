@@ -43,6 +43,9 @@ namespace cs {
 /**
  * \ingroup ndn
  * \defgroup ndn-cs Content Store
+ */
+
+/**
  * \ingroup ndn-cs
  *
  * \brief NDN content store entry

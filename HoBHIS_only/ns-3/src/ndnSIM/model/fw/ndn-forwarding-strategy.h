@@ -44,6 +44,8 @@ class ContentStore;
 
 /**
  * \ingroup ndn
+ * \defgroup ndn-fw Forwarding Strategy
+ * \ingroup ndn-fw
  * \brief Abstract base class for Ndn forwarding strategies
  */
 class ForwardingStrategy :

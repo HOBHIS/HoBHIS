@@ -27,7 +27,7 @@ namespace ndn {
 namespace fw {
 
 /**
- * \ingroup ndn
+ * \ingroup ndn-fw
  * \brief Implementation of experimental NACK messages (enables with EnableNACKs option)
  */
 class Nacks :

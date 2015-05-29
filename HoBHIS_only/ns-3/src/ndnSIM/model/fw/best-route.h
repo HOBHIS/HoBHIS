@@ -31,7 +31,7 @@ namespace ndn {
 namespace fw {
 
 /**
- * \ingroup ndn
+ *\ingroup ndn-fw
  * \brief Best route strategy
  */
 class BestRoute :

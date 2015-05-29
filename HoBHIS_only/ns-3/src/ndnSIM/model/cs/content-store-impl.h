@@ -36,6 +36,9 @@
 namespace ns3 {
 namespace ndn {
 namespace cs {
+/**
+ * \ingroup ndn-cs
+ */
 
 template<class CS>
 class EntryImpl : public Entry
@@ -64,7 +67,9 @@ private:
 };
 
 
-
+/**
+ * \ingroup ndn-cs
+ */
 template<class Policy>
 class ContentStoreImpl : public ContentStore,
                          protected ndnSIM::trie_with_policy< NameComponents,

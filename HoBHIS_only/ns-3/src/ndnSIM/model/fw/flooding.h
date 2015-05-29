@@ -30,7 +30,7 @@ namespace ndn {
 namespace fw {
 
 /**
- * \ingroup ndn
+ * \ingroup ndn-fw
  * \brief Flooding strategy
  *
  * \todo Describe

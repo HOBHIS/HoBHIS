@@ -32,8 +32,9 @@ class Channel;
 namespace ndn {
 
 /**
- * @ingroup ndn
- * @brief Helper for GlobalRouter interface
+ * \ingroup ndn-helpers
+ *
+ * \brief Helper for GlobalRouter interface
  */
 class GlobalRoutingHelper
 {

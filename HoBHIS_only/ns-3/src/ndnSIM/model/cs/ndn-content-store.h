@@ -42,7 +42,12 @@ namespace cs {
 
 /**
  * \ingroup ndn
+ * \defgroup ndn-cs Content Store
+ * \ingroup ndn-cs
+ *
  * \brief NDN content store entry
+ *
+ *
  *
  * Content store entry stores separately pseudo header and content of
  * ContentObject packet.  It is responsibility of the caller to
@@ -102,7 +107,8 @@ private:
 
 
 /**
- * \ingroup ndn
+ *
+ * \ingroup ndn-cs
  * \brief Base class for NDN content store
  *
  * Particular implementations should implement Lookup, Add, and Print methods

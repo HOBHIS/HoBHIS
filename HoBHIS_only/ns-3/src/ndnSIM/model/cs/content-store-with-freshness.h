@@ -30,6 +30,9 @@ namespace ns3 {
 namespace ndn {
 namespace cs {
 
+/**
+ * \ingroup ndn-cs
+ */
 template<class Policy>
 class ContentStoreWithFreshness :
     public ContentStoreImpl< ndnSIM::multi_policy_traits< boost::mpl::vector2< Policy, ndnSIM::freshness_policy_traits > > >

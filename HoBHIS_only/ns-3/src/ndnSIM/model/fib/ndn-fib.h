@@ -33,6 +33,8 @@ class InterestHeader;
 
 /**
  * \ingroup ndn
+ * \defgroup ndn-fib Fib
+ * \ingroup ndn-fib
  * \brief Class implementing FIB functionality
  */
 class Fib : public Object

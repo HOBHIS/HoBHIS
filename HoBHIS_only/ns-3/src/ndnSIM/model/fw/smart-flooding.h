@@ -29,7 +29,7 @@ namespace ndn {
 namespace fw {
 
 /**
- * \ingroup ccnx
+ * \ingroup ndn-fw
  */
 class SmartFlooding :
     public GreenYellowRed

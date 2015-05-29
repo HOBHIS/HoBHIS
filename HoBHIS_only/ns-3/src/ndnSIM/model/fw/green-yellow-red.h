@@ -28,7 +28,7 @@ namespace ndn {
 namespace fw {
 
 /**
- * \ingroup ndn
+ * \ingroup ndn-fw
  */
 class GreenYellowRed :
     public Nacks

@@ -38,6 +38,10 @@
 
 namespace boost {
 
+/**
+ * \ingroup ndn-helpers
+ */
+
 class NdnGlobalRouterGraph
 {
 public:

@@ -31,6 +31,9 @@ namespace ns3 {
 namespace ndn {
 namespace fib {
 
+/**
+ * \ingroup ndn-fib
+ */
 class EntryImpl : public Entry
 {
 public:
@@ -60,7 +63,7 @@ private:
 };
 
 /**
- * \ingroup ndn
+ * \ingroup ndn-fib
  * \brief Class implementing FIB functionality
  */
 class FibImpl : public Fib,

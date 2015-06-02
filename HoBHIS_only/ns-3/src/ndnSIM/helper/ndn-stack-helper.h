@@ -145,12 +145,12 @@ public:
 	/**
 	 * @brief Enable Hop-by-hop Interest shaping
 	 *
-	 * @param enable			 Enable or disable HoBHIS (enabled by default)
-	 * @param client_server	 mode of the node : client and server or middle node (middle node by default)
-	 * @param maxInterest		 Maximum Interest queue size (in packets)
-	 * @param queueTarget		 Target for Data Queue size (cf. "r" in the shaping rate formula)
-	 * @param design			 Design parameter (cf. "h" in the shaping rate formula)
-	 * @param dynamic_design	 enable or disable dynamic (disable by default)
+	 * @param enable			 Enable or disable HoBHIS (enabled by default).
+	 * @param client_server	 Mode of the node : client and server or middle node (middle node by default).
+	 * @param maxInterest		 Maximum Interest queue size (in packets).
+	 * @param queueTarget		 Target for Data Queue size (cf. "r" in the shaping rate formula).
+	 * @param design			 Design parameter (cf. "h" in the shaping rate formula).
+	 * @param dynamic_design	 Enable or disable dynamic (disable by default).
 	 */
 	void
 	EnableHobhis (bool enable=true,

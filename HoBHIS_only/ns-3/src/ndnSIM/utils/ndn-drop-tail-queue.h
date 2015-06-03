@@ -36,15 +36,15 @@ class TraceContainer;
 /**
  * \ingroup queue
  *
- * \brief A FIFO packet queue that drops tail-end packets on overflow
- * This is for the content packet. if the queue is filled, we delete the fires packet who arrive
- * in the first time and insert the new content packet in the last place of the queue.
+ * \brief A FIFO packet queue that drops tail-end packets on overflow.
+ * This is for the content packet. if the queue is filled, we delete the fires packet who arrive.
+ * In the first time and insert the new content packet in the last place of the queue.
  */
 class NDNDropTailQueue : public Queue {
 public:
 
 	/**
-	 * \brief get the the type ID
+	 * \brief Get the the type ID.
 	 *
 	 * \return TypeID
 	 */
@@ -53,7 +53,7 @@ public:
 	/**
 	 * \brief NDNDropTailQueue Constructor
 	 *
-	 * Creates a droptail queue with a maximum size of 100 packets by default
+	 * Creates a droptail queue with a maximum size of 100 packets by default.
 	 */
 	NDNDropTailQueue ();
 	/**
@@ -63,88 +63,88 @@ public:
 	virtual ~NDNDropTailQueue();
 
 	/**
-	 * Set the operating mode of this queue: QUEUE_MODE_PACKETS or QUEUE_MODE_BYTES
+	 * Set the operating mode of this queue: QUEUE_MODE_PACKETS or QUEUE_MODE_BYTES.
 	 *
-	 * \param mode The operating mode of this queue
+	 * \param mode The operating mode of this queue.
 	 */
 	void SetMode (NDNDropTailQueue::QueueMode mode);
 
 	/**
-	 * Get the encapsulation mode of this queue: QUEUE_MODE_PACKETS or QUEUE_MODE_BYTES
+	 * Get the encapsulation mode of this queue: QUEUE_MODE_PACKETS or QUEUE_MODE_BYTES.
 	 *
-	 * \returns The encapsulation mode of this queue
+	 * \returns The encapsulation mode of this queue.
 	 */
 	NDNDropTailQueue::QueueMode GetMode (void);
 
 	/**
-	 * \brief Get the queue length table by flow type constant
+	 * \brief Get the queue length table by flow type constant.
 	 *
-	 * \return the queue length table by flow type constant
+	 * \return The queue length table by flow type constant.
 	 */
 	inline const std::map<ndn::Name, uint32_t> & GetQLengthPerFlow() const {return this->m_nQueueSizePerFlow;}
 
 	/**
-	 * \brief Get the queue length table by flow
+	 * \brief Get the queue length table by flow.
 	 *
-	 * \return the queue length table by flow
+	 * \return The queue length table by flow.
 	 */
 	inline std::map<ndn::Name, uint32_t> & GetQLengthPerFlow() {return this->m_nQueueSizePerFlow;}
 
 	/**
-	 * \brief print the information of each flow in this queue
+	 * \brief Print the information of each flow in this queue.
 	 */
 	void PrintQueueSizePerFlow();
 
 	/**
-	 * \brief get the number of the packet by the prefix in this queue
+	 * \brief Get the number of the packet by the prefix in this queue.
 	 *
-	 * \param prefix of a flow
+	 * \param prefix Prefix of a flow.
 	 *
-	 * \return the number of the packet by the prefix in this queue
+	 * \return The number of the packet by the prefix in this queue.
 	 */
 	uint32_t GetQueueSizePerFlow(ndn::Name prefix);
 
 	/**
 	 * \brief Get the total content packet number in this queue
 	 *
-	 * \param prefix of a flow
+	 * \param prefix Prefix of a flow.
 	 *
-	 * \return the amount of packet
+	 * \return The amount of packet.
 	 */
 	uint32_t GetDataQueueLength() {return m_packets.size();};
 
 	/**
-	 * \brief Get the amount of the flow
+	 * \brief Get the amount of the flow.
 	 *
-	 * the amount of the flow
+	 * The amount of the flow.
 	 *
-	 * \return the amount of the flow
+	 * \return The amount of the flow.
 	 */
 	double GetFlowNumber();
 
 	/**
-	 * \brief Get the max Data packet number could be accepted in this queue
+	 * \brief Get the max Data packet number could be accepted in this queue.
 	 *
-	 * \return the max Data packet number could be accepted in this queue
+	 * \return The max Data packet number could be accepted in this queue.
 	 */
 	uint32_t GetMaxChunks() const {return this->m_maxPackets;};
 
 private:
 	/**
-	 * \brief insert a packet, if the queue is filled, just drop the packet
+	 * \brief Insert a packet, if the queue is filled, just drop the packet.
 	 *
-	 * \param a packet
+	 * \param p Packet
 	 */
 	virtual bool DoEnqueue (Ptr<Packet> p);
 
 	/**
-	 * \brief just delete the first element in the total queue and delete it also
-	 * in the flow
+	 * \brief Just delete the first element in the total queue and delete it also in the flow.
+	 *
 	 */
 	virtual Ptr<Packet> DoDequeue (void);
 
 	/**
-	 * \brief show the packet, queue state
+	 * \brief Show the packet, queue state.
 	 *
 	 */
 	virtual Ptr<const Packet> DoPeek (void) const;

@@ -21,7 +21,11 @@ Fichiers modifiés:
 	Remove : Fonction of families "NetDeviceFaceCreateCallback"
 
 fichier á étudier:
-ndn-consumer-cbr.h
-ndn-producer.h
-ndn-app-helper.h
-ndn-forwading-strategy.h
+
+ndn-stack-hepler
+ndn-hobhis-net-device-face
+ndn_shr_entry
+ndn_send_time_entry
+ndn-drop-tail-queue
+ndn-forwading-strategy
+ndn-face
